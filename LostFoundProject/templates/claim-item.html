@@ -1,0 +1,135 @@
+{% extends 'base.html' %}
+
+{% block title %}Claim Item - Campus Lost and Found{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+    <!-- Header -->
+    <div class="mb-8">
+        <h1 class="text-3xl font-bold text-gray-900 mb-2">Claim Item</h1>
+        <p class="text-gray-600">Submit a claim for a found item</p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <!-- Item Details -->
+        <div class="md:col-span-2">
+            <div class="bg-white rounded-lg shadow-md">
+                <div class="px-6 py-4 border-b border-gray-200">
+                    <h2 class="text-lg font-semibold text-gray-900">Item Details</h2>
+                </div>
+                <div class="p-6">
+                    <div class="flex items-start space-x-6">
+                        <div class="flex-shrink-0">
+                            <img src="{{ item.image.url|default:'https://via.placeholder.com/150' }}" alt="{{ item.name }}" class="h-32 w-32 object-cover rounded-lg">
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="text-lg font-medium text-gray-900">{{ item.name }}</h3>
+                            <p class="text-sm text-gray-500">Category: {{ item.category }}</p>
+                            <p class="text-sm text-gray-500">Location Found: {{ item.location }}</p>
+                            <p class="text-sm text-gray-500">Date Found: {{ item.date_found }}</p>
+                            <p class="mt-2 text-sm text-gray-600">{{ item.description }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Claim Form -->
+            <div class="bg-white rounded-lg shadow-md mt-6">
+                <div class="px-6 py-4 border-b border-gray-200">
+                    <h2 class="text-lg font-semibold text-gray-900">Submit Claim</h2>
+                </div>
+                <div class="p-6">
+                    <form method="post" class="space-y-6">
+                        {% csrf_token %}
+                        <input type="hidden" name="item_id" value="{{ item.id }}">
+
+                        <div>
+                            <label for="claim_reason" class="block text-sm font-medium text-gray-700 mb-2">Why do you believe this item belongs to you?</label>
+                            <textarea id="claim_reason" name="claim_reason" rows="4" required
+                                class="block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                                placeholder="Please provide specific details about the item that prove it belongs to you..."></textarea>
+                        </div>
+
+                        <div>
+                            <label for="contact_email" class="block text-sm font-medium text-gray-700 mb-2">Contact Email</label>
+                            <input type="email" id="contact_email" name="contact_email" value="{{ user.email }}" required
+                                class="block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                        </div>
+
+                        <div>
+                            <label for="contact_phone" class="block text-sm font-medium text-gray-700 mb-2">Contact Phone</label>
+                            <input type="tel" id="contact_phone" name="contact_phone" value="{{ user.phone }}"
+                                class="block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                                placeholder="(123) 456-7890">
+                        </div>
+
+                        <div class="flex items-start">
+                            <div class="flex items-center h-5">
+                                <input id="terms" name="terms" type="checkbox" required
+                                    class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
+                            </div>
+                            <div class="ml-3 text-sm">
+                                <label for="terms" class="font-medium text-gray-700">I confirm that this item belongs to me</label>
+                                <p class="text-gray-500">By checking this box, you confirm that the information provided is accurate and that you are the rightful owner of this item.</p>
+                            </div>
+                        </div>
+
+                        <div class="flex justify-end">
+                            <button type="submit" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                                <i data-feather="send" class="h-4 w-4 mr-2"></i>
+                                Submit Claim
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="space-y-6">
+            <!-- Claim Guidelines -->
+            <div class="bg-white rounded-lg shadow-md">
+                <div class="px-6 py-4 border-b border-gray-200">
+                    <h2 class="text-lg font-semibold text-gray-900">Claim Guidelines</h2>
+                </div>
+                <div class="p-6">
+                    <div class="space-y-4">
+                        <div class="flex items-start">
+                            <div class="flex-shrink-0">
+                                <i data-feather="check-circle" class="h-5 w-5 text-green-500"></i>
+                            </div>
+                            <p class="ml-3 text-sm text-gray-600">Provide specific details about the item that prove it belongs to you.</p>
+                        </div>
+                        <div class="flex items-start">
+                            <div class="flex-shrink-0">
+                                <i data-feather="check-circle" class="h-5 w-5 text-green-500"></i>
+                            </div>
+                            <p class="ml-3 text-sm text-gray-600">Include any unique identifiers or distinguishing features.</p>
+                        </div>
+                        <div class="flex items-start">
+                            <div class="flex-shrink-0">
+                                <i data-feather="check-circle" class="h-5 w-5 text-green-500"></i>
+                            </div>
+                            <p class="ml-3 text-sm text-gray-600">Be prepared to provide additional verification if requested.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Need Help? -->
+            <div class="bg-white rounded-lg shadow-md">
+                <div class="px-6 py-4 border-b border-gray-200">
+                    <h2 class="text-lg font-semibold text-gray-900">Need Help?</h2>
+                </div>
+                <div class="p-6">
+                    <p class="text-sm text-gray-600 mb-4">If you need assistance with your claim or have questions about the process, please contact our support team.</p>
+                    <a href="{% url 'user_guide' %}" class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 w-full justify-center">
+                        <i data-feather="help-circle" class="h-4 w-4 mr-2"></i>
+                        View User Guide
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

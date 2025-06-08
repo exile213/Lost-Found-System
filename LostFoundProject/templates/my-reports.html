@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+
+{% block title %}My Reports - Campus Lost and Found{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+    <!-- Header -->
+    <div class="mb-8">
+        <h1 class="text-3xl font-bold text-gray-900 mb-2">My Reports</h1>
+        <p class="text-gray-600">View and manage your lost and found item reports</p>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+        <a href="{% url 'report_lost' %}" class="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+            <i data-feather="alert-circle" class="h-4 w-4 mr-2"></i>
+            Report Lost Item
+        </a>
+        <a href="{% url 'report_found' %}" class="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+            <i data-feather="plus-circle" class="h-4 w-4 mr-2"></i>
+            Report Found Item
+        </a>
+    </div>
+
+    <!-- Reports Tabs -->
+    <div class="bg-white rounded-lg shadow-md">
+        <div class="border-b border-gray-200">
+            <nav class="flex -mb-px">
+                <button class="w-1/2 py-4 px-1 text-center border-b-2 border-indigo-500 font-medium text-sm text-indigo-600">
+                    Lost Items
+                </button>
+                <button class="w-1/2 py-4 px-1 text-center border-b-2 border-transparent font-medium text-sm text-gray-500 hover:text-gray-700 hover:border-gray-300">
+                    Found Items
+                </button>
+            </nav>
+        </div>
+
+        <!-- Reports List -->
+        <div class="p-6">
+            <!-- Empty State -->
+            <div class="text-center py-12">
+                <i data-feather="inbox" class="h-16 w-16 text-gray-400 mx-auto mb-4"></i>
+                <h3 class="text-lg font-medium text-gray-900 mb-2">No reports yet</h3>
+                <p class="text-gray-600">You haven't reported any lost items yet.</p>
+            </div>
+
+            <!-- Sample Report Item (Hidden by default) -->
+            <div class="hidden">
+                <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-4">
+                    <div class="flex items-start justify-between">
+                        <div class="flex items-center space-x-4">
+                            <div class="p-2 bg-red-100 rounded-full">
+                                <i data-feather="alert-circle" class="h-6 w-6 text-red-600"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-semibold text-gray-900">Black Laptop</h3>
+                                <p class="text-sm text-gray-600">Electronics • Library</p>
+                            </div>
+                        </div>
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                            Pending
+                        </span>
+                    </div>
+                    <div class="mt-4 flex justify-end space-x-2">
+                        <button class="inline-flex items-center px-3 py-1.5 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                            <i data-feather="edit" class="h-4 w-4 mr-1"></i>
+                            Edit
+                        </button>
+                        <button class="inline-flex items-center px-3 py-1.5 border border-transparent text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+                            <i data-feather="trash-2" class="h-4 w-4 mr-1"></i>
+                            Delete
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
