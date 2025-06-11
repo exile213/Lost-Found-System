@@ -1,460 +1,721 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>User Guide - Campus Lost and Found</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/feather-icons"></script>
-    <link rel="stylesheet" href="assets/css/custom.css">
-</head>
-<body class="bg-gray-50">
+    <link rel="stylesheet" href="assets/css/custom.css" />
+  </head>
+  <body class="bg-gray-50">
     <!-- Navigation -->
     <nav class="bg-white shadow-lg">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between h-16">
-                <div class="flex items-center">
-                    <a href="dashboard.html" class="text-2xl font-bold text-indigo-600">🎓 Campus Lost & Found</a>
-                </div>
-                <div class="hidden md:flex items-center space-x-4">
-                    <a href="dashboard.html" class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">Dashboard</a>
-                    <a href="search.html" class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">Search</a>
-                    <a href="my-reports.html" class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">My Reports</a>
-                    <a href="user-guide.html" class="text-indigo-600 px-3 py-2 rounded-md text-sm font-medium">Help</a>
-                    <div class="relative">
-                        <button class="flex items-center text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium" onclick="toggleProfileDropdown()">
-                            <i data-feather="user" class="h-4 w-4 mr-1"></i>
-                            Profile
-                            <i data-feather="chevron-down" class="h-4 w-4 ml-1"></i>
-                        </button>
-                        <div id="profileDropdown" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50">
-                            <a href="profile.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">My Profile</a>
-                            <a href="login.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Logout</a>
-                        </div>
-                    </div>
-                </div>
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between h-16">
+          <div class="flex items-center">
+            <a href="dashboard.html" class="text-2xl font-bold text-indigo-600"
+              >🎓 Campus Lost & Found</a
+            >
+          </div>
+          <div class="hidden md:flex items-center space-x-4">
+            <a
+              href="dashboard.html"
+              class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
+              >Dashboard</a
+            >
+            <a
+              href="search.html"
+              class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
+              >Search</a
+            >
+            <a
+              href="my-reports.html"
+              class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
+              >My Reports</a
+            >
+            <a
+              href="user-guide.html"
+              class="text-indigo-600 px-3 py-2 rounded-md text-sm font-medium"
+              >Help</a
+            >
+            <div class="relative">
+              <button
+                class="flex items-center text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
+                onclick="toggleProfileDropdown()"
+              >
+                <i data-feather="user" class="h-4 w-4 mr-1"></i>
+                Profile
+                <i data-feather="chevron-down" class="h-4 w-4 ml-1"></i>
+              </button>
+              <div
+                id="profileDropdown"
+                class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50"
+              >
+                <a
+                  href="profile.html"
+                  class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  >My Profile</a
+                >
+                <a
+                  href="{% url 'accounts:login' %}"
+                  class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  >Logout</a
+                >
+              </div>
             </div>
+          </div>
         </div>
+      </div>
     </nav>
 
     <!-- Main Content -->
     <main class="max-w-4xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-        <!-- Header -->
-        <div class="mb-8">
-            <div class="flex items-center mb-4">
-                <div class="p-3 bg-blue-100 rounded-full mr-4">
-                    <i data-feather="help-circle" class="h-8 w-8 text-blue-600"></i>
+      <!-- Header -->
+      <div class="mb-8">
+        <div class="flex items-center mb-4">
+          <div class="p-3 bg-blue-100 rounded-full mr-4">
+            <i data-feather="help-circle" class="h-8 w-8 text-blue-600"></i>
+          </div>
+          <div>
+            <h1 class="text-3xl font-bold text-gray-900">User Guide</h1>
+            <p class="text-gray-600 mt-1">
+              Learn how to use the Campus Lost and Found System effectively
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Navigation -->
+      <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+        <h2 class="text-xl font-semibold text-gray-900 mb-4">
+          Quick Navigation
+        </h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <a
+            href="#getting-started"
+            class="flex items-center p-3 border border-gray-200 rounded-lg hover:bg-gray-50"
+          >
+            <i
+              data-feather="play-circle"
+              class="h-5 w-5 text-green-600 mr-3"
+            ></i>
+            <span class="font-medium">Getting Started</span>
+          </a>
+          <a
+            href="#reporting-lost"
+            class="flex items-center p-3 border border-gray-200 rounded-lg hover:bg-gray-50"
+          >
+            <i
+              data-feather="alert-circle"
+              class="h-5 w-5 text-red-600 mr-3"
+            ></i>
+            <span class="font-medium">Report Lost Items</span>
+          </a>
+          <a
+            href="#reporting-found"
+            class="flex items-center p-3 border border-gray-200 rounded-lg hover:bg-gray-50"
+          >
+            <i
+              data-feather="plus-circle"
+              class="h-5 w-5 text-green-600 mr-3"
+            ></i>
+            <span class="font-medium">Report Found Items</span>
+          </a>
+          <a
+            href="#searching"
+            class="flex items-center p-3 border border-gray-200 rounded-lg hover:bg-gray-50"
+          >
+            <i data-feather="search" class="h-5 w-5 text-blue-600 mr-3"></i>
+            <span class="font-medium">Search & Browse</span>
+          </a>
+          <a
+            href="#claiming"
+            class="flex items-center p-3 border border-gray-200 rounded-lg hover:bg-gray-50"
+          >
+            <i
+              data-feather="handshake"
+              class="h-5 w-5 text-purple-600 mr-3"
+            ></i>
+            <span class="font-medium">Claim Items</span>
+          </a>
+          <a
+            href="#faq"
+            class="flex items-center p-3 border border-gray-200 rounded-lg hover:bg-gray-50"
+          >
+            <i
+              data-feather="help-circle"
+              class="h-5 w-5 text-orange-600 mr-3"
+            ></i>
+            <span class="font-medium">FAQ</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- Getting Started -->
+      <section id="getting-started" class="mb-12">
+        <div class="bg-white rounded-lg shadow-md p-6">
+          <h2 class="text-2xl font-bold text-gray-900 mb-6 flex items-center">
+            <i
+              data-feather="play-circle"
+              class="h-6 w-6 text-green-600 mr-3"
+            ></i>
+            Getting Started
+          </h2>
+
+          <div class="space-y-6">
+            <div>
+              <h3 class="text-lg font-semibold text-gray-900 mb-3">
+                System Overview
+              </h3>
+              <p class="text-gray-700 mb-4">
+                The Campus Lost and Found System helps students, faculty, and
+                staff report lost items, find items they've lost, and return
+                found items to their rightful owners. The system uses behavioral
+                analytics to identify patterns and improve recovery rates.
+              </p>
+            </div>
+
+            <div>
+              <h3 class="text-lg font-semibold text-gray-900 mb-3">
+                Account Access
+              </h3>
+              <ul class="list-disc list-inside text-gray-700 space-y-2">
+                <li>Use your official university email address to log in</li>
+                <li>
+                  Only enrolled students, faculty, and staff can access the
+                  system
+                </li>
+                <li>
+                  Your identity is verified through the university
+                  authentication system
+                </li>
+                <li>
+                  All activities are logged for security and accountability
+                </li>
+              </ul>
+            </div>
+
+            <div>
+              <h3 class="text-lg font-semibold text-gray-900 mb-3">
+                Dashboard Overview
+              </h3>
+              <p class="text-gray-700 mb-4">
+                After logging in, you'll see your personal dashboard with:
+              </p>
+              <ul class="list-disc list-inside text-gray-700 space-y-2">
+                <li>
+                  <strong>Quick Actions:</strong> Fast access to report
+                  lost/found items
+                </li>
+                <li>
+                  <strong>Statistics:</strong> Your personal activity summary
+                </li>
+                <li>
+                  <strong>Recent Activity:</strong> Updates on your reports and
+                  claims
+                </li>
+                <li>
+                  <strong>Tips:</strong> Helpful advice for better success rates
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Reporting Lost Items -->
+      <section id="reporting-lost" class="mb-12">
+        <div class="bg-white rounded-lg shadow-md p-6">
+          <h2 class="text-2xl font-bold text-gray-900 mb-6 flex items-center">
+            <i
+              data-feather="alert-circle"
+              class="h-6 w-6 text-red-600 mr-3"
+            ></i>
+            Reporting Lost Items
+          </h2>
+
+          <div class="space-y-6">
+            <div>
+              <h3 class="text-lg font-semibold text-gray-900 mb-3">
+                When to Report
+              </h3>
+              <ul class="list-disc list-inside text-gray-700 space-y-2">
+                <li>Report items as soon as you realize they're missing</li>
+                <li>
+                  The sooner you report, the higher the chance of recovery
+                </li>
+                <li>
+                  Even if you think the item might be at home, it's worth
+                  reporting
+                </li>
+              </ul>
+            </div>
+
+            <div>
+              <h3 class="text-lg font-semibold text-gray-900 mb-3">
+                Required Information
+              </h3>
+              <div
+                class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4"
+              >
+                <div class="flex items-start">
+                  <i
+                    data-feather="info"
+                    class="h-5 w-5 text-blue-600 mr-2 mt-0.5"
+                  ></i>
+                  <div>
+                    <p class="text-sm text-blue-800 font-medium">
+                      Required Fields
+                    </p>
+                    <p class="text-sm text-blue-700 mt-1">
+                      All fields marked with (*) must be completed
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <ul class="list-disc list-inside text-gray-700 space-y-2">
+                <li>
+                  <strong>Item Name:</strong> Be specific (e.g., "iPhone 13 Pro
+                  Max" not just "phone")
+                </li>
+                <li>
+                  <strong>Category:</strong> Select the most appropriate
+                  category
+                </li>
+                <li>
+                  <strong>Description:</strong> Include color, brand, size,
+                  unique features
+                </li>
+                <li>
+                  <strong>Last Seen Location:</strong> Where you last remember
+                  having it
+                </li>
+                <li>
+                  <strong>Date & Time:</strong> When you last had the item
+                </li>
+              </ul>
+            </div>
+
+            <div>
+              <h3 class="text-lg font-semibold text-gray-900 mb-3">
+                Tips for Better Results
+              </h3>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="bg-green-50 border border-green-200 rounded-lg p-4">
+                  <div class="flex items-center mb-2">
+                    <i
+                      data-feather="camera"
+                      class="h-5 w-5 text-green-600 mr-2"
+                    ></i>
+                    <span class="font-medium text-green-800"
+                      >Include Photos</span
+                    >
+                  </div>
+                  <p class="text-sm text-green-700">
+                    Upload photos if you have them - increases recovery by 60%
+                  </p>
+                </div>
+                <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                  <div class="flex items-center mb-2">
+                    <i
+                      data-feather="map-pin"
+                      class="h-5 w-5 text-blue-600 mr-2"
+                    ></i>
+                    <span class="font-medium text-blue-800">Be Specific</span>
+                  </div>
+                  <p class="text-sm text-blue-700">
+                    Exact locations and detailed descriptions help
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Reporting Found Items -->
+      <section id="reporting-found" class="mb-12">
+        <div class="bg-white rounded-lg shadow-md p-6">
+          <h2 class="text-2xl font-bold text-gray-900 mb-6 flex items-center">
+            <i
+              data-feather="plus-circle"
+              class="h-6 w-6 text-green-600 mr-3"
+            ></i>
+            Reporting Found Items
+          </h2>
+
+          <div class="space-y-6">
+            <div>
+              <h3 class="text-lg font-semibold text-gray-900 mb-3">
+                Why Report Found Items?
+              </h3>
+              <p class="text-gray-700 mb-4">
+                By reporting found items, you help fellow students and staff
+                recover their belongings. Your honest effort makes the campus
+                community stronger and more trustworthy.
+              </p>
+            </div>
+
+            <div>
+              <h3 class="text-lg font-semibold text-gray-900 mb-3">
+                What to Include
+              </h3>
+              <ul class="list-disc list-inside text-gray-700 space-y-2">
+                <li>
+                  <strong>Photos are required:</strong> Help verify ownership
+                </li>
+                <li>
+                  <strong>Found location:</strong> Exactly where you found it
+                </li>
+                <li><strong>Current status:</strong> Where the item is now</li>
+                <li>
+                  <strong>Detailed description:</strong> All visible features
+                </li>
+                <li>
+                  <strong>Date and time found:</strong> When you discovered it
+                </li>
+              </ul>
+            </div>
+
+            <div>
+              <h3 class="text-lg font-semibold text-gray-900 mb-3">
+                Item Security Options
+              </h3>
+              <div class="space-y-3">
+                <div class="flex items-start">
+                  <div class="p-2 bg-blue-100 rounded-full mr-3 mt-1">
+                    <i data-feather="user" class="h-4 w-4 text-blue-600"></i>
+                  </div>
+                  <div>
+                    <p class="font-medium text-gray-900">Keep with you</p>
+                    <p class="text-sm text-gray-600">
+                      You maintain possession until the owner is verified
+                    </p>
+                  </div>
+                </div>
+                <div class="flex items-start">
+                  <div class="p-2 bg-green-100 rounded-full mr-3 mt-1">
+                    <i data-feather="shield" class="h-4 w-4 text-green-600"></i>
+                  </div>
+                  <div>
+                    <p class="font-medium text-gray-900">Turn in to security</p>
+                    <p class="text-sm text-gray-600">
+                      Campus security or lost & found office holds the item
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Searching -->
+      <section id="searching" class="mb-12">
+        <div class="bg-white rounded-lg shadow-md p-6">
+          <h2 class="text-2xl font-bold text-gray-900 mb-6 flex items-center">
+            <i data-feather="search" class="h-6 w-6 text-blue-600 mr-3"></i>
+            Searching & Browsing
+          </h2>
+
+          <div class="space-y-6">
+            <div>
+              <h3 class="text-lg font-semibold text-gray-900 mb-3">
+                Search Strategies
+              </h3>
+              <ul class="list-disc list-inside text-gray-700 space-y-2">
+                <li>
+                  <strong>Use keywords:</strong> Search by item name, brand, or
+                  description
+                </li>
+                <li>
+                  <strong>Filter by category:</strong> Narrow down to specific
+                  item types
+                </li>
+                <li>
+                  <strong>Location filters:</strong> Focus on areas where you
+                  lost the item
+                </li>
+                <li>
+                  <strong>Date ranges:</strong> Look within specific time
+                  periods
+                </li>
+              </ul>
+            </div>
+
+            <div>
+              <h3 class="text-lg font-semibold text-gray-900 mb-3">
+                Available Filters
+              </h3>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <h4 class="font-medium text-gray-900 mb-2">Basic Filters</h4>
+                  <ul class="text-sm text-gray-700 space-y-1">
+                    <li>• Category (Electronics, Bags, etc.)</li>
+                    <li>• Location (Library, Cafeteria, etc.)</li>
+                    <li>• Status (Active, Resolved, Claimed)</li>
+                    <li>• Type (Lost or Found items)</li>
+                  </ul>
                 </div>
                 <div>
-                    <h1 class="text-3xl font-bold text-gray-900">User Guide</h1>
-                    <p class="text-gray-600 mt-1">Learn how to use the Campus Lost and Found System effectively</p>
+                  <h4 class="font-medium text-gray-900 mb-2">
+                    Advanced Filters
+                  </h4>
+                  <ul class="text-sm text-gray-700 space-y-1">
+                    <li>• Date ranges</li>
+                    <li>• Sorting options</li>
+                    <li>• Keyword search</li>
+                    <li>• Multiple criteria</li>
+                  </ul>
                 </div>
+              </div>
             </div>
+
+            <div>
+              <h3 class="text-lg font-semibold text-gray-900 mb-3">
+                Best Practices
+              </h3>
+              <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                <div class="flex items-start">
+                  <i
+                    data-feather="light-bulb"
+                    class="h-5 w-5 text-yellow-600 mr-2 mt-0.5"
+                  ></i>
+                  <div>
+                    <p class="text-sm text-yellow-800 font-medium">Pro Tip</p>
+                    <p class="text-sm text-yellow-700 mt-1">
+                      Check the system regularly - new items are reported daily.
+                      Set up a routine to search for your lost items.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
+      </section>
 
-        <!-- Quick Navigation -->
-        <div class="bg-white rounded-lg shadow-md p-6 mb-8">
-            <h2 class="text-xl font-semibold text-gray-900 mb-4">Quick Navigation</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                <a href="#getting-started" class="flex items-center p-3 border border-gray-200 rounded-lg hover:bg-gray-50">
-                    <i data-feather="play-circle" class="h-5 w-5 text-green-600 mr-3"></i>
-                    <span class="font-medium">Getting Started</span>
-                </a>
-                <a href="#reporting-lost" class="flex items-center p-3 border border-gray-200 rounded-lg hover:bg-gray-50">
-                    <i data-feather="alert-circle" class="h-5 w-5 text-red-600 mr-3"></i>
-                    <span class="font-medium">Report Lost Items</span>
-                </a>
-                <a href="#reporting-found" class="flex items-center p-3 border border-gray-200 rounded-lg hover:bg-gray-50">
-                    <i data-feather="plus-circle" class="h-5 w-5 text-green-600 mr-3"></i>
-                    <span class="font-medium">Report Found Items</span>
-                </a>
-                <a href="#searching" class="flex items-center p-3 border border-gray-200 rounded-lg hover:bg-gray-50">
-                    <i data-feather="search" class="h-5 w-5 text-blue-600 mr-3"></i>
-                    <span class="font-medium">Search & Browse</span>
-                </a>
-                <a href="#claiming" class="flex items-center p-3 border border-gray-200 rounded-lg hover:bg-gray-50">
-                    <i data-feather="handshake" class="h-5 w-5 text-purple-600 mr-3"></i>
-                    <span class="font-medium">Claim Items</span>
-                </a>
-                <a href="#faq" class="flex items-center p-3 border border-gray-200 rounded-lg hover:bg-gray-50">
-                    <i data-feather="help-circle" class="h-5 w-5 text-orange-600 mr-3"></i>
-                    <span class="font-medium">FAQ</span>
-                </a>
+      <!-- Claiming Items -->
+      <section id="claiming" class="mb-12">
+        <div class="bg-white rounded-lg shadow-md p-6">
+          <h2 class="text-2xl font-bold text-gray-900 mb-6 flex items-center">
+            <i
+              data-feather="handshake"
+              class="h-6 w-6 text-purple-600 mr-3"
+            ></i>
+            Claiming Items
+          </h2>
+
+          <div class="space-y-6">
+            <div>
+              <h3 class="text-lg font-semibold text-gray-900 mb-3">
+                Verification Process
+              </h3>
+              <p class="text-gray-700 mb-4">
+                To claim an item, you must provide proof of ownership. This
+                protects everyone and ensures items are returned to their
+                rightful owners.
+              </p>
+
+              <div class="space-y-3">
+                <div class="flex items-start">
+                  <div class="p-2 bg-purple-100 rounded-full mr-3 mt-1">
+                    <span class="text-purple-600 font-bold text-sm">1</span>
+                  </div>
+                  <div>
+                    <p class="font-medium text-gray-900">
+                      Describe unique features
+                    </p>
+                    <p class="text-sm text-gray-600">
+                      Details only the owner would know (scratches, contents,
+                      serial numbers)
+                    </p>
+                  </div>
+                </div>
+                <div class="flex items-start">
+                  <div class="p-2 bg-purple-100 rounded-full mr-3 mt-1">
+                    <span class="text-purple-600 font-bold text-sm">2</span>
+                  </div>
+                  <div>
+                    <p class="font-medium text-gray-900">
+                      Provide loss details
+                    </p>
+                    <p class="text-sm text-gray-600">
+                      When and where you lost the item
+                    </p>
+                  </div>
+                </div>
+                <div class="flex items-start">
+                  <div class="p-2 bg-purple-100 rounded-full mr-3 mt-1">
+                    <span class="text-purple-600 font-bold text-sm">3</span>
+                  </div>
+                  <div>
+                    <p class="font-medium text-gray-900">
+                      Upload supporting documents
+                    </p>
+                    <p class="text-sm text-gray-600">
+                      Receipts, photos, or other proof of ownership (optional
+                      but helpful)
+                    </p>
+                  </div>
+                </div>
+              </div>
             </div>
+
+            <div>
+              <h3 class="text-lg font-semibold text-gray-900 mb-3">
+                What Happens Next?
+              </h3>
+              <ol class="list-decimal list-inside text-gray-700 space-y-2">
+                <li>Campus staff review your claim within 24-48 hours</li>
+                <li>They may contact you for additional verification</li>
+                <li>If approved, you'll be contacted to arrange pickup</li>
+                <li>Bring your student ID when collecting the item</li>
+              </ol>
+            </div>
+
+            <div class="bg-red-50 border border-red-200 rounded-lg p-4">
+              <div class="flex items-start">
+                <i
+                  data-feather="alert-triangle"
+                  class="h-5 w-5 text-red-600 mr-2 mt-0.5"
+                ></i>
+                <div>
+                  <p class="text-sm text-red-800 font-medium">Important</p>
+                  <p class="text-sm text-red-700 mt-1">
+                    False claims may result in disciplinary action. Only claim
+                    items that genuinely belong to you.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
+      </section>
 
-        <!-- Getting Started -->
-        <section id="getting-started" class="mb-12">
-            <div class="bg-white rounded-lg shadow-md p-6">
-                <h2 class="text-2xl font-bold text-gray-900 mb-6 flex items-center">
-                    <i data-feather="play-circle" class="h-6 w-6 text-green-600 mr-3"></i>
-                    Getting Started
-                </h2>
-                
-                <div class="space-y-6">
-                    <div>
-                        <h3 class="text-lg font-semibold text-gray-900 mb-3">System Overview</h3>
-                        <p class="text-gray-700 mb-4">
-                            The Campus Lost and Found System helps students, faculty, and staff report lost items, 
-                            find items they've lost, and return found items to their rightful owners. The system 
-                            uses behavioral analytics to identify patterns and improve recovery rates.
-                        </p>
-                    </div>
+      <!-- FAQ -->
+      <section id="faq" class="mb-12">
+        <div class="bg-white rounded-lg shadow-md p-6">
+          <h2 class="text-2xl font-bold text-gray-900 mb-6 flex items-center">
+            <i
+              data-feather="help-circle"
+              class="h-6 w-6 text-orange-600 mr-3"
+            ></i>
+            Frequently Asked Questions
+          </h2>
 
-                    <div>
-                        <h3 class="text-lg font-semibold text-gray-900 mb-3">Account Access</h3>
-                        <ul class="list-disc list-inside text-gray-700 space-y-2">
-                            <li>Use your official university email address to log in</li>
-                            <li>Only enrolled students, faculty, and staff can access the system</li>
-                            <li>Your identity is verified through the university authentication system</li>
-                            <li>All activities are logged for security and accountability</li>
-                        </ul>
-                    </div>
-
-                    <div>
-                        <h3 class="text-lg font-semibold text-gray-900 mb-3">Dashboard Overview</h3>
-                        <p class="text-gray-700 mb-4">After logging in, you'll see your personal dashboard with:</p>
-                        <ul class="list-disc list-inside text-gray-700 space-y-2">
-                            <li><strong>Quick Actions:</strong> Fast access to report lost/found items</li>
-                            <li><strong>Statistics:</strong> Your personal activity summary</li>
-                            <li><strong>Recent Activity:</strong> Updates on your reports and claims</li>
-                            <li><strong>Tips:</strong> Helpful advice for better success rates</li>
-                        </ul>
-                    </div>
-                </div>
+          <div class="space-y-6">
+            <div>
+              <h3 class="font-semibold text-gray-900 mb-2">
+                How long do items stay in the system?
+              </h3>
+              <p class="text-gray-700">
+                Items remain active for 90 days. After that, unclaimed items may
+                be donated to charity or disposed of according to university
+                policy.
+              </p>
             </div>
-        </section>
 
-        <!-- Reporting Lost Items -->
-        <section id="reporting-lost" class="mb-12">
-            <div class="bg-white rounded-lg shadow-md p-6">
-                <h2 class="text-2xl font-bold text-gray-900 mb-6 flex items-center">
-                    <i data-feather="alert-circle" class="h-6 w-6 text-red-600 mr-3"></i>
-                    Reporting Lost Items
-                </h2>
-                
-                <div class="space-y-6">
-                    <div>
-                        <h3 class="text-lg font-semibold text-gray-900 mb-3">When to Report</h3>
-                        <ul class="list-disc list-inside text-gray-700 space-y-2">
-                            <li>Report items as soon as you realize they're missing</li>
-                            <li>The sooner you report, the higher the chance of recovery</li>
-                            <li>Even if you think the item might be at home, it's worth reporting</li>
-                        </ul>
-                    </div>
-
-                    <div>
-                        <h3 class="text-lg font-semibold text-gray-900 mb-3">Required Information</h3>
-                        <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
-                            <div class="flex items-start">
-                                <i data-feather="info" class="h-5 w-5 text-blue-600 mr-2 mt-0.5"></i>
-                                <div>
-                                    <p class="text-sm text-blue-800 font-medium">Required Fields</p>
-                                    <p class="text-sm text-blue-700 mt-1">All fields marked with (*) must be completed</p>
-                                </div>
-                            </div>
-                        </div>
-                        <ul class="list-disc list-inside text-gray-700 space-y-2">
-                            <li><strong>Item Name:</strong> Be specific (e.g., "iPhone 13 Pro Max" not just "phone")</li>
-                            <li><strong>Category:</strong> Select the most appropriate category</li>
-                            <li><strong>Description:</strong> Include color, brand, size, unique features</li>
-                            <li><strong>Last Seen Location:</strong> Where you last remember having it</li>
-                            <li><strong>Date & Time:</strong> When you last had the item</li>
-                        </ul>
-                    </div>
-
-                    <div>
-                        <h3 class="text-lg font-semibold text-gray-900 mb-3">Tips for Better Results</h3>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div class="bg-green-50 border border-green-200 rounded-lg p-4">
-                                <div class="flex items-center mb-2">
-                                    <i data-feather="camera" class="h-5 w-5 text-green-600 mr-2"></i>
-                                    <span class="font-medium text-green-800">Include Photos</span>
-                                </div>
-                                <p class="text-sm text-green-700">Upload photos if you have them - increases recovery by 60%</p>
-                            </div>
-                            <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                                <div class="flex items-center mb-2">
-                                    <i data-feather="map-pin" class="h-5 w-5 text-blue-600 mr-2"></i>
-                                    <span class="font-medium text-blue-800">Be Specific</span>
-                                </div>
-                                <p class="text-sm text-blue-700">Exact locations and detailed descriptions help</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+            <div>
+              <h3 class="font-semibold text-gray-900 mb-2">
+                Can I edit my report after submitting?
+              </h3>
+              <p class="text-gray-700">
+                Yes, you can update your reports through the "My Reports"
+                section. However, claims cannot be edited once submitted.
+              </p>
             </div>
-        </section>
 
-        <!-- Reporting Found Items -->
-        <section id="reporting-found" class="mb-12">
-            <div class="bg-white rounded-lg shadow-md p-6">
-                <h2 class="text-2xl font-bold text-gray-900 mb-6 flex items-center">
-                    <i data-feather="plus-circle" class="h-6 w-6 text-green-600 mr-3"></i>
-                    Reporting Found Items
-                </h2>
-                
-                <div class="space-y-6">
-                    <div>
-                        <h3 class="text-lg font-semibold text-gray-900 mb-3">Why Report Found Items?</h3>
-                        <p class="text-gray-700 mb-4">
-                            By reporting found items, you help fellow students and staff recover their belongings. 
-                            Your honest effort makes the campus community stronger and more trustworthy.
-                        </p>
-                    </div>
-
-                    <div>
-                        <h3 class="text-lg font-semibold text-gray-900 mb-3">What to Include</h3>
-                        <ul class="list-disc list-inside text-gray-700 space-y-2">
-                            <li><strong>Photos are required:</strong> Help verify ownership</li>
-                            <li><strong>Found location:</strong> Exactly where you found it</li>
-                            <li><strong>Current status:</strong> Where the item is now</li>
-                            <li><strong>Detailed description:</strong> All visible features</li>
-                            <li><strong>Date and time found:</strong> When you discovered it</li>
-                        </ul>
-                    </div>
-
-                    <div>
-                        <h3 class="text-lg font-semibold text-gray-900 mb-3">Item Security Options</h3>
-                        <div class="space-y-3">
-                            <div class="flex items-start">
-                                <div class="p-2 bg-blue-100 rounded-full mr-3 mt-1">
-                                    <i data-feather="user" class="h-4 w-4 text-blue-600"></i>
-                                </div>
-                                <div>
-                                    <p class="font-medium text-gray-900">Keep with you</p>
-                                    <p class="text-sm text-gray-600">You maintain possession until the owner is verified</p>
-                                </div>
-                            </div>
-                            <div class="flex items-start">
-                                <div class="p-2 bg-green-100 rounded-full mr-3 mt-1">
-                                    <i data-feather="shield" class="h-4 w-4 text-green-600"></i>
-                                </div>
-                                <div>
-                                    <p class="font-medium text-gray-900">Turn in to security</p>
-                                    <p class="text-sm text-gray-600">Campus security or lost & found office holds the item</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+            <div>
+              <h3 class="font-semibold text-gray-900 mb-2">
+                What if I find my lost item after reporting?
+              </h3>
+              <p class="text-gray-700">
+                Please update your report status to "Found" in the "My Reports"
+                section. This helps keep the system accurate and saves time for
+                staff.
+              </p>
             </div>
-        </section>
 
-        <!-- Searching -->
-        <section id="searching" class="mb-12">
-            <div class="bg-white rounded-lg shadow-md p-6">
-                <h2 class="text-2xl font-bold text-gray-900 mb-6 flex items-center">
-                    <i data-feather="search" class="h-6 w-6 text-blue-600 mr-3"></i>
-                    Searching & Browsing
-                </h2>
-                
-                <div class="space-y-6">
-                    <div>
-                        <h3 class="text-lg font-semibold text-gray-900 mb-3">Search Strategies</h3>
-                        <ul class="list-disc list-inside text-gray-700 space-y-2">
-                            <li><strong>Use keywords:</strong> Search by item name, brand, or description</li>
-                            <li><strong>Filter by category:</strong> Narrow down to specific item types</li>
-                            <li><strong>Location filters:</strong> Focus on areas where you lost the item</li>
-                            <li><strong>Date ranges:</strong> Look within specific time periods</li>
-                        </ul>
-                    </div>
-
-                    <div>
-                        <h3 class="text-lg font-semibold text-gray-900 mb-3">Available Filters</h3>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div>
-                                <h4 class="font-medium text-gray-900 mb-2">Basic Filters</h4>
-                                <ul class="text-sm text-gray-700 space-y-1">
-                                    <li>• Category (Electronics, Bags, etc.)</li>
-                                    <li>• Location (Library, Cafeteria, etc.)</li>
-                                    <li>• Status (Active, Resolved, Claimed)</li>
-                                    <li>• Type (Lost or Found items)</li>
-                                </ul>
-                            </div>
-                            <div>
-                                <h4 class="font-medium text-gray-900 mb-2">Advanced Filters</h4>
-                                <ul class="text-sm text-gray-700 space-y-1">
-                                    <li>• Date ranges</li>
-                                    <li>• Sorting options</li>
-                                    <li>• Keyword search</li>
-                                    <li>• Multiple criteria</li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div>
-                        <h3 class="text-lg font-semibold text-gray-900 mb-3">Best Practices</h3>
-                        <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-                            <div class="flex items-start">
-                                <i data-feather="light-bulb" class="h-5 w-5 text-yellow-600 mr-2 mt-0.5"></i>
-                                <div>
-                                    <p class="text-sm text-yellow-800 font-medium">Pro Tip</p>
-                                    <p class="text-sm text-yellow-700 mt-1">
-                                        Check the system regularly - new items are reported daily. Set up a routine to search for your lost items.
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+            <div>
+              <h3 class="font-semibold text-gray-900 mb-2">
+                Is my personal information secure?
+              </h3>
+              <p class="text-gray-700">
+                Yes, your contact information is only shared with verified
+                campus personnel and proven item owners. All system activity is
+                logged for security.
+              </p>
             </div>
-        </section>
 
-        <!-- Claiming Items -->
-        <section id="claiming" class="mb-12">
-            <div class="bg-white rounded-lg shadow-md p-6">
-                <h2 class="text-2xl font-bold text-gray-900 mb-6 flex items-center">
-                    <i data-feather="handshake" class="h-6 w-6 text-purple-600 mr-3"></i>
-                    Claiming Items
-                </h2>
-                
-                <div class="space-y-6">
-                    <div>
-                        <h3 class="text-lg font-semibold text-gray-900 mb-3">Verification Process</h3>
-                        <p class="text-gray-700 mb-4">
-                            To claim an item, you must provide proof of ownership. This protects everyone and ensures 
-                            items are returned to their rightful owners.
-                        </p>
-                        
-                        <div class="space-y-3">
-                            <div class="flex items-start">
-                                <div class="p-2 bg-purple-100 rounded-full mr-3 mt-1">
-                                    <span class="text-purple-600 font-bold text-sm">1</span>
-                                </div>
-                                <div>
-                                    <p class="font-medium text-gray-900">Describe unique features</p>
-                                    <p class="text-sm text-gray-600">Details only the owner would know (scratches, contents, serial numbers)</p>
-                                </div>
-                            </div>
-                            <div class="flex items-start">
-                                <div class="p-2 bg-purple-100 rounded-full mr-3 mt-1">
-                                    <span class="text-purple-600 font-bold text-sm">2</span>
-                                </div>
-                                <div>
-                                    <p class="font-medium text-gray-900">Provide loss details</p>
-                                    <p class="text-sm text-gray-600">When and where you lost the item</p>
-                                </div>
-                            </div>
-                            <div class="flex items-start">
-                                <div class="p-2 bg-purple-100 rounded-full mr-3 mt-1">
-                                    <span class="text-purple-600 font-bold text-sm">3</span>
-                                </div>
-                                <div>
-                                    <p class="font-medium text-gray-900">Upload supporting documents</p>
-                                    <p class="text-sm text-gray-600">Receipts, photos, or other proof of ownership (optional but helpful)</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div>
-                        <h3 class="text-lg font-semibold text-gray-900 mb-3">What Happens Next?</h3>
-                        <ol class="list-decimal list-inside text-gray-700 space-y-2">
-                            <li>Campus staff review your claim within 24-48 hours</li>
-                            <li>They may contact you for additional verification</li>
-                            <li>If approved, you'll be contacted to arrange pickup</li>
-                            <li>Bring your student ID when collecting the item</li>
-                        </ol>
-                    </div>
-
-                    <div class="bg-red-50 border border-red-200 rounded-lg p-4">
-                        <div class="flex items-start">
-                            <i data-feather="alert-triangle" class="h-5 w-5 text-red-600 mr-2 mt-0.5"></i>
-                            <div>
-                                <p class="text-sm text-red-800 font-medium">Important</p>
-                                <p class="text-sm text-red-700 mt-1">
-                                    False claims may result in disciplinary action. Only claim items that genuinely belong to you.
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+            <div>
+              <h3 class="font-semibold text-gray-900 mb-2">
+                Can visitors or guests use the system?
+              </h3>
+              <p class="text-gray-700">
+                No, only enrolled students, faculty, and staff with valid
+                university credentials can access the system.
+              </p>
             </div>
-        </section>
 
-        <!-- FAQ -->
-        <section id="faq" class="mb-12">
-            <div class="bg-white rounded-lg shadow-md p-6">
-                <h2 class="text-2xl font-bold text-gray-900 mb-6 flex items-center">
-                    <i data-feather="help-circle" class="h-6 w-6 text-orange-600 mr-3"></i>
-                    Frequently Asked Questions
-                </h2>
-                
-                <div class="space-y-6">
-                    <div>
-                        <h3 class="font-semibold text-gray-900 mb-2">How long do items stay in the system?</h3>
-                        <p class="text-gray-700">Items remain active for 90 days. After that, unclaimed items may be donated to charity or disposed of according to university policy.</p>
-                    </div>
-
-                    <div>
-                        <h3 class="font-semibold text-gray-900 mb-2">Can I edit my report after submitting?</h3>
-                        <p class="text-gray-700">Yes, you can update your reports through the "My Reports" section. However, claims cannot be edited once submitted.</p>
-                    </div>
-
-                    <div>
-                        <h3 class="font-semibold text-gray-900 mb-2">What if I find my lost item after reporting?</h3>
-                        <p class="text-gray-700">Please update your report status to "Found" in the "My Reports" section. This helps keep the system accurate and saves time for staff.</p>
-                    </div>
-
-                    <div>
-                        <h3 class="font-semibold text-gray-900 mb-2">Is my personal information secure?</h3>
-                        <p class="text-gray-700">Yes, your contact information is only shared with verified campus personnel and proven item owners. All system activity is logged for security.</p>
-                    </div>
-
-                    <div>
-                        <h3 class="font-semibold text-gray-900 mb-2">Can visitors or guests use the system?</h3>
-                        <p class="text-gray-700">No, only enrolled students, faculty, and staff with valid university credentials can access the system.</p>
-                    </div>
-
-                    <div>
-                        <h3 class="font-semibold text-gray-900 mb-2">What if someone falsely claims my found item?</h3>
-                        <p class="text-gray-700">All claims require verification. Campus staff carefully review proof of ownership before approving any claim. False claims result in disciplinary action.</p>
-                    </div>
-                </div>
+            <div>
+              <h3 class="font-semibold text-gray-900 mb-2">
+                What if someone falsely claims my found item?
+              </h3>
+              <p class="text-gray-700">
+                All claims require verification. Campus staff carefully review
+                proof of ownership before approving any claim. False claims
+                result in disciplinary action.
+              </p>
             </div>
-        </section>
-
-        <!-- Contact Support -->
-        <div class="bg-indigo-50 border border-indigo-200 rounded-lg p-6">
-            <div class="flex items-center mb-4">
-                <i data-feather="message-circle" class="h-6 w-6 text-indigo-600 mr-3"></i>
-                <h3 class="text-lg font-semibold text-gray-900">Need More Help?</h3>
-            </div>
-            <p class="text-gray-700 mb-4">
-                If you have questions not covered in this guide, or need technical support, please contact us:
-            </p>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div class="flex items-center">
-                    <i data-feather="mail" class="h-5 w-5 text-indigo-600 mr-2"></i>
-                    <span class="text-gray-700">support@university.edu</span>
-                </div>
-                <div class="flex items-center">
-                    <i data-feather="phone" class="h-5 w-5 text-indigo-600 mr-2"></i>
-                    <span class="text-gray-700">(555) 123-HELP</span>
-                </div>
-            </div>
+          </div>
         </div>
+      </section>
+
+      <!-- Contact Support -->
+      <div class="bg-indigo-50 border border-indigo-200 rounded-lg p-6">
+        <div class="flex items-center mb-4">
+          <i
+            data-feather="message-circle"
+            class="h-6 w-6 text-indigo-600 mr-3"
+          ></i>
+          <h3 class="text-lg font-semibold text-gray-900">Need More Help?</h3>
+        </div>
+        <p class="text-gray-700 mb-4">
+          If you have questions not covered in this guide, or need technical
+          support, please contact us:
+        </p>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="flex items-center">
+            <i data-feather="mail" class="h-5 w-5 text-indigo-600 mr-2"></i>
+            <span class="text-gray-700">support@university.edu</span>
+          </div>
+          <div class="flex items-center">
+            <i data-feather="phone" class="h-5 w-5 text-indigo-600 mr-2"></i>
+            <span class="text-gray-700">(555) 123-HELP</span>
+          </div>
+        </div>
+      </div>
     </main>
 
     <script src="assets/js/main.js"></script>
     <script>
-        feather.replace();
+      feather.replace();
 
-        // Smooth scrolling for anchor links
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                const target = document.querySelector(this.getAttribute('href'));
-                if (target) {
-                    target.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'start'
-                    });
-                }
+      // Smooth scrolling for anchor links
+      document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
+        anchor.addEventListener("click", function (e) {
+          e.preventDefault();
+          const target = document.querySelector(this.getAttribute("href"));
+          if (target) {
+            target.scrollIntoView({
+              behavior: "smooth",
+              block: "start",
             });
+          }
         });
+      });
     </script>
-</body>
+  </body>
 </html>
