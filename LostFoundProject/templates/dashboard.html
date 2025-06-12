@@ -32,7 +32,7 @@
             </div>
         </a>
 
-        <a href="{% url 'analytics:search' %}" class="group bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg p-6 hover:from-blue-600 hover:to-blue-700 transition duration-200 transform hover:scale-105">
+        <a href="{% url 'search' %}" class="group bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg p-6 hover:from-blue-600 hover:to-blue-700 transition duration-200 transform hover:scale-105">
             <div class="flex items-center">
                 <i data-feather="search" class="h-8 w-8 mb-2"></i>
                 <div class="ml-4">
@@ -64,7 +64,7 @@
                 </div>
                 <div class="ml-4">
                     <p class="text-sm font-medium text-gray-600">My Lost Items</p>
-                    <p class="text-2xl font-bold text-gray-900">0</p>
+                    <p class="text-2xl font-bold text-gray-900">{{ user_lost_items }}</p>
                     <p class="text-sm text-gray-500">Active reports</p>
                 </div>
             </div>
@@ -77,7 +77,7 @@
                 </div>
                 <div class="ml-4">
                     <p class="text-sm font-medium text-gray-600">Items Found</p>
-                    <p class="text-2xl font-bold text-gray-900">0</p>
+                    <p class="text-2xl font-bold text-gray-900">{{ user_found_items }}</p>
                     <p class="text-sm text-gray-500">Reported by me</p>
                 </div>
             </div>
@@ -90,7 +90,7 @@
                 </div>
                 <div class="ml-4">
                     <p class="text-sm font-medium text-gray-600">Pending Claims</p>
-                    <p class="text-2xl font-bold text-gray-900">0</p>
+                    <p class="text-2xl font-bold text-gray-900">{{ pending_claims }}</p>
                     <p class="text-sm text-gray-500">Awaiting verification</p>
                 </div>
             </div>
@@ -98,17 +98,96 @@
     </div>
 </div>
 
-<!-- Recent Activity -->
+<!-- Recent Activity and Potential Matches -->
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-12">
-    <div class="bg-white rounded-lg shadow-md">
-        <div class="px-6 py-4 border-b border-gray-200">
-            <h2 class="text-lg font-semibold text-gray-900">Recent Activity</h2>
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <!-- Recent Activity -->
+        <div class="bg-white rounded-lg shadow-md">
+            <div class="px-6 py-4 border-b border-gray-200">
+                <h2 class="text-lg font-semibold text-gray-900">Recent Activity</h2>
+            </div>
+            <div class="p-6">
+                {% if has_activity %}
+                    {% if recent_reports %}
+                        <div class="mb-6">
+                            <h3 class="text-sm font-medium text-gray-700 mb-3">Recent Reports</h3>
+                            {% for report in recent_reports %}
+                                <div class="flex items-center justify-between py-2 border-b border-gray-100 last:border-b-0">
+                                    <div class="flex items-center">
+                                        <div class="w-2 h-2 rounded-full {% if report.status == 'lost' %}bg-red-500{% elif report.status == 'found' %}bg-green-500{% else %}bg-blue-500{% endif %} mr-3"></div>
+                                        <div>
+                                            <p class="text-sm font-medium text-gray-900">{{ report.title }}</p>
+                                            <p class="text-xs text-gray-500">{{ report.category|title }} • {{ report.location }}</p>
+                                        </div>
+                                    </div>
+                                    <span class="text-xs text-gray-400">{{ report.timestamp_reported|date:"M d" }}</span>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                    
+                    {% if recent_claims %}
+                        <div class="mb-6">
+                            <h3 class="text-sm font-medium text-gray-700 mb-3">Recent Claims</h3>
+                            {% for claim in recent_claims %}
+                                <div class="flex items-center justify-between py-2 border-b border-gray-100 last:border-b-0">
+                                    <div class="flex items-center">
+                                        <div class="w-2 h-2 rounded-full {% if claim.is_verified %}bg-green-500{% else %}bg-yellow-500{% endif %} mr-3"></div>
+                                        <div>
+                                            <p class="text-sm font-medium text-gray-900">{{ claim.item.title }}</p>
+                                            <p class="text-xs text-gray-500">{% if claim.is_verified %}Verified{% else %}Pending{% endif %}</p>
+                                        </div>
+                                    </div>
+                                    <span class="text-xs text-gray-400">{{ claim.submitted_at|date:"M d" }}</span>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                {% else %}
+                    <div class="text-center py-12">
+                        <i data-feather="activity" class="h-16 w-16 text-gray-400 mx-auto mb-4"></i>
+                        <h3 class="text-lg font-medium text-gray-900 mb-2">No recent activity</h3>
+                        <p class="text-gray-600">Your recent reports and claims will appear here.</p>
+                    </div>
+                {% endif %}
+            </div>
         </div>
-        <div class="p-6">
-            <div class="text-center py-12">
-                <i data-feather="activity" class="h-16 w-16 text-gray-400 mx-auto mb-4"></i>
-                <h3 class="text-lg font-medium text-gray-900 mb-2">No recent activity</h3>
-                <p class="text-gray-600">Your recent reports and claims will appear here.</p>
+
+        <!-- Potential Matches -->
+        <div class="bg-white rounded-lg shadow-md">
+            <div class="px-6 py-4 border-b border-gray-200">
+                <h2 class="text-lg font-semibold text-gray-900">Potential Matches</h2>
+            </div>
+            <div class="p-6">
+                {% if potential_matches %}
+                    <div class="space-y-4">
+                        {% for item in potential_matches %}
+                            <div class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition duration-200">
+                                <div class="flex items-start justify-between">
+                                    <div class="flex-1">
+                                        <h3 class="text-sm font-medium text-gray-900">{{ item.title }}</h3>
+                                        <p class="text-xs text-gray-500 mt-1">{{ item.category|title }} • {{ item.location }}</p>
+                                        <p class="text-xs text-gray-400 mt-1">Found on {{ item.date_lost_or_found|date:"M d, Y" }}</p>
+                                    </div>
+                                    <a href="{% url 'reports:report_detail' item.id %}" class="ml-4 text-blue-600 hover:text-blue-800 text-sm font-medium">
+                                        View Details
+                                    </a>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                    <div class="mt-4 text-center">
+                        <a href="{% url 'search' %}" class="text-blue-600 hover:text-blue-800 text-sm font-medium">
+                            View all found items →
+                        </a>
+                    </div>
+                {% else %}
+                    <div class="text-center py-12">
+                        <i data-feather="search" class="h-16 w-16 text-gray-400 mx-auto mb-4"></i>
+                        <h3 class="text-lg font-medium text-gray-900 mb-2">No potential matches</h3>
+                        <p class="text-gray-600">We'll notify you when we find items that match your lost reports.</p>
+                    </div>
+                {% endif %}
             </div>
         </div>
     </div>

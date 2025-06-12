@@ -23,7 +23,7 @@
                         <a href="{% url 'dashboard' %}" class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium flex items-center" title="Dashboard">
                             <i data-feather="home" class="h-5 w-5"></i>
                         </a>
-                        <a href="{% url 'analytics:search' %}" class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium flex items-center" title="Search">
+                        <a href="{% url 'search' %}" class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium flex items-center" title="Search">
                             <i data-feather="search" class="h-5 w-5"></i>
                         </a>
                         <a href="{% url 'reports:my_reports' %}" class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium flex items-center" title="My Reports">
@@ -48,7 +48,13 @@
                         <i data-feather="plus-square" class="h-5 w-5"></i>
                     </a>
                     <a href="{% url 'accounts:profile' %}" class="flex items-center space-x-2 text-gray-600 hover:text-indigo-600 transition-colors" title="Profile">
-                        <img src="{% static 'img/default-avatar.png' %}" alt="Profile" class="w-8 h-8 rounded-full">
+                        {% if user.profile_picture %}
+                            <img src="{{ user.profile_picture.url }}" alt="Profile" class="w-8 h-8 rounded-full object-cover">
+                        {% else %}
+                            <div class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center">
+                                <i data-feather="user" class="h-4 w-4 text-gray-500"></i>
+                            </div>
+                        {% endif %}
                         <span class="hidden md:inline">{{ user.username }}</span>
                     </a>
                     <a href="{% url 'accounts:logout' %}" class="text-gray-600 hover:text-red-600 transition-colors px-3 py-2 rounded-md text-sm font-medium border border-red-100 hover:border-red-300 bg-white flex items-center" title="Logout">
@@ -87,7 +93,7 @@
                     <h3 class="text-lg font-semibold text-gray-900 mb-4">Quick Links</h3>
                     <ul class="space-y-2">
                         <li><a href="{% url 'index' %}" class="text-gray-600 hover:text-indigo-600">Home</a></li>
-                        <li><a href="{% url 'analytics:search' %}" class="text-gray-600 hover:text-indigo-600">Search</a></li>
+                        <li><a href="{% url 'search' %}" class="text-gray-600 hover:text-indigo-600">Search</a></li>
                         <li><a href="{% url 'reports:report_lost' %}" class="text-gray-600 hover:text-indigo-600">Report Lost</a></li>
                         <li><a href="{% url 'reports:report_found' %}" class="text-gray-600 hover:text-indigo-600">Report Found</a></li>
                     </ul>

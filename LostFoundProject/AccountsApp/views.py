@@ -5,6 +5,10 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import UserChangeForm, PasswordChangeForm
 from django.contrib.auth import update_session_auth_hash
+from ReportsApp.models import ItemReport
+from ClaimsApp.models import ClaimRequest
+from django.http import JsonResponse
+import json
 
 # Create your views here.
 
@@ -36,6 +40,19 @@ def login(request):
 
 @login_required
 def profile(request):
+    if request.method == 'POST':
+        action = request.POST.get('action')
+        
+        if action == 'upload_photo':
+            if 'profile_picture' in request.FILES:
+                user = request.user
+                user.profile_picture = request.FILES['profile_picture']
+                user.save()
+                messages.success(request, 'Profile picture updated successfully!')
+            else:
+                messages.error(request, 'Please select a file to upload.')
+            return redirect('accounts:profile')
+    
     return render(request, 'accounts/profile.html')
 
 def register(request):
@@ -88,13 +105,22 @@ def logout(request):
 @login_required
 def edit_profile(request):
     if request.method == 'POST':
-        form = UserChangeForm(request.POST, instance=request.user)
-        if form.is_valid():
-            form.save()
-            return redirect('accounts:profile')
-    else:
-        form = UserChangeForm(instance=request.user)
-    return render(request, 'accounts/edit_profile.html', {'form': form})
+        user = request.user
+        user.first_name = request.POST.get('first_name', '')
+        user.last_name = request.POST.get('last_name', '')
+        user.phone_number = request.POST.get('phone_number', '')
+        user.student_id = request.POST.get('student_id', '')
+        user.department = request.POST.get('department', '')
+        
+        # Handle profile picture upload
+        if 'profile_picture' in request.FILES:
+            user.profile_picture = request.FILES['profile_picture']
+        
+        user.save()
+        messages.success(request, 'Profile updated successfully!')
+        return redirect('accounts:profile')
+    
+    return render(request, 'accounts/edit_profile.html')
 
 @login_required
 def change_password(request):
@@ -103,7 +129,11 @@ def change_password(request):
         if form.is_valid():
             user = form.save()
             update_session_auth_hash(request, user)
+            messages.success(request, 'Password changed successfully!')
             return redirect('accounts:profile')
+        else:
+            messages.error(request, 'Please correct the errors below.')
     else:
         form = PasswordChangeForm(user=request.user)
+    
     return render(request, 'accounts/change_password.html', {'form': form})
