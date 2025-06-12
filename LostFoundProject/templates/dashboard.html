@@ -4,106 +4,112 @@
 
 {% block content %}
 <!-- Welcome Section -->
-<div class="mb-8">
+<div class="mb-8 mt-8 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <h1 class="text-3xl font-bold text-gray-900 mb-2">Welcome back, {{ user.username }}!</h1>
     <p class="text-gray-600">Manage your lost and found reports from your dashboard.</p>
 </div>
 
 <!-- Quick Actions -->
-<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-    <a href="{% url 'reports:report_lost' %}" class="group bg-gradient-to-r from-red-500 to-red-600 text-white rounded-lg p-6 hover:from-red-600 hover:to-red-700 transition duration-200 transform hover:scale-105">
-        <div class="flex items-center">
-            <i data-feather="alert-circle" class="h-8 w-8 mb-2"></i>
-            <div class="ml-4">
-                <h3 class="text-lg font-semibold">Report Lost Item</h3>
-                <p class="text-red-100 text-sm">Lost something? Report it here</p>
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-12">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <a href="{% url 'reports:report_lost' %}" class="group bg-gradient-to-r from-red-500 to-red-600 text-white rounded-lg p-6 hover:from-red-600 hover:to-red-700 transition duration-200 transform hover:scale-105">
+            <div class="flex items-center">
+                <i data-feather="alert-circle" class="h-8 w-8 mb-2"></i>
+                <div class="ml-4">
+                    <h3 class="text-lg font-semibold">Report Lost Item</h3>
+                    <p class="text-red-100 text-sm">Lost something? Report it here</p>
+                </div>
             </div>
-        </div>
-    </a>
+        </a>
 
-    <a href="{% url 'reports:report_found' %}" class="group bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg p-6 hover:from-green-600 hover:to-green-700 transition duration-200 transform hover:scale-105">
-        <div class="flex items-center">
-            <i data-feather="plus-circle" class="h-8 w-8 mb-2"></i>
-            <div class="ml-4">
-                <h3 class="text-lg font-semibold">Report Found Item</h3>
-                <p class="text-green-100 text-sm">Found something? Help others</p>
+        <a href="{% url 'reports:report_found' %}" class="group bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg p-6 hover:from-green-600 hover:to-green-700 transition duration-200 transform hover:scale-105">
+            <div class="flex items-center">
+                <i data-feather="plus-circle" class="h-8 w-8 mb-2"></i>
+                <div class="ml-4">
+                    <h3 class="text-lg font-semibold">Report Found Item</h3>
+                    <p class="text-green-100 text-sm">Found something? Help others</p>
+                </div>
             </div>
-        </div>
-    </a>
+        </a>
 
-    <a href="{% url 'analytics:search' %}" class="group bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg p-6 hover:from-blue-600 hover:to-blue-700 transition duration-200 transform hover:scale-105">
-        <div class="flex items-center">
-            <i data-feather="search" class="h-8 w-8 mb-2"></i>
-            <div class="ml-4">
-                <h3 class="text-lg font-semibold">Search Items</h3>
-                <p class="text-blue-100 text-sm">Browse lost & found reports</p>
+        <a href="{% url 'analytics:search' %}" class="group bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg p-6 hover:from-blue-600 hover:to-blue-700 transition duration-200 transform hover:scale-105">
+            <div class="flex items-center">
+                <i data-feather="search" class="h-8 w-8 mb-2"></i>
+                <div class="ml-4">
+                    <h3 class="text-lg font-semibold">Search Items</h3>
+                    <p class="text-blue-100 text-sm">Browse lost & found reports</p>
+                </div>
             </div>
-        </div>
-    </a>
+        </a>
 
-    <a href="{% url 'reports:my_reports' %}" class="group bg-gradient-to-r from-purple-500 to-purple-600 text-white rounded-lg p-6 hover:from-purple-600 hover:to-purple-700 transition duration-200 transform hover:scale-105">
-        <div class="flex items-center">
-            <i data-feather="folder" class="h-8 w-8 mb-2"></i>
-            <div class="ml-4">
-                <h3 class="text-lg font-semibold">My Reports</h3>
-                <p class="text-purple-100 text-sm">Track your reports & claims</p>
+        <a href="{% url 'reports:my_reports' %}" class="group bg-gradient-to-r from-purple-500 to-purple-600 text-white rounded-lg p-6 hover:from-purple-600 hover:to-purple-700 transition duration-200 transform hover:scale-105">
+            <div class="flex items-center">
+                <i data-feather="folder" class="h-8 w-8 mb-2"></i>
+                <div class="ml-4">
+                    <h3 class="text-lg font-semibold">My Reports</h3>
+                    <p class="text-purple-100 text-sm">Track your reports & claims</p>
+                </div>
             </div>
-        </div>
-    </a>
+        </a>
+    </div>
 </div>
 
 <!-- Statistics -->
-<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-    <div class="bg-white rounded-lg shadow-md p-6">
-        <div class="flex items-center">
-            <div class="p-3 bg-red-100 rounded-full">
-                <i data-feather="alert-triangle" class="h-6 w-6 text-red-600"></i>
-            </div>
-            <div class="ml-4">
-                <p class="text-sm font-medium text-gray-600">My Lost Items</p>
-                <p class="text-2xl font-bold text-gray-900">0</p>
-                <p class="text-sm text-gray-500">Active reports</p>
-            </div>
-        </div>
-    </div>
-
-    <div class="bg-white rounded-lg shadow-md p-6">
-        <div class="flex items-center">
-            <div class="p-3 bg-green-100 rounded-full">
-                <i data-feather="check-circle" class="h-6 w-6 text-green-600"></i>
-            </div>
-            <div class="ml-4">
-                <p class="text-sm font-medium text-gray-600">Items Found</p>
-                <p class="text-2xl font-bold text-gray-900">0</p>
-                <p class="text-sm text-gray-500">Reported by me</p>
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-12">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <div class="flex items-center">
+                <div class="p-3 bg-red-100 rounded-full">
+                    <i data-feather="alert-triangle" class="h-6 w-6 text-red-600"></i>
+                </div>
+                <div class="ml-4">
+                    <p class="text-sm font-medium text-gray-600">My Lost Items</p>
+                    <p class="text-2xl font-bold text-gray-900">0</p>
+                    <p class="text-sm text-gray-500">Active reports</p>
+                </div>
             </div>
         </div>
-    </div>
 
-    <div class="bg-white rounded-lg shadow-md p-6">
-        <div class="flex items-center">
-            <div class="p-3 bg-blue-100 rounded-full">
-                <i data-feather="clock" class="h-6 w-6 text-blue-600"></i>
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <div class="flex items-center">
+                <div class="p-3 bg-green-100 rounded-full">
+                    <i data-feather="check-circle" class="h-6 w-6 text-green-600"></i>
+                </div>
+                <div class="ml-4">
+                    <p class="text-sm font-medium text-gray-600">Items Found</p>
+                    <p class="text-2xl font-bold text-gray-900">0</p>
+                    <p class="text-sm text-gray-500">Reported by me</p>
+                </div>
             </div>
-            <div class="ml-4">
-                <p class="text-sm font-medium text-gray-600">Pending Claims</p>
-                <p class="text-2xl font-bold text-gray-900">0</p>
-                <p class="text-sm text-gray-500">Awaiting verification</p>
+        </div>
+
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <div class="flex items-center">
+                <div class="p-3 bg-blue-100 rounded-full">
+                    <i data-feather="clock" class="h-6 w-6 text-blue-600"></i>
+                </div>
+                <div class="ml-4">
+                    <p class="text-sm font-medium text-gray-600">Pending Claims</p>
+                    <p class="text-2xl font-bold text-gray-900">0</p>
+                    <p class="text-sm text-gray-500">Awaiting verification</p>
+                </div>
             </div>
         </div>
     </div>
 </div>
 
 <!-- Recent Activity -->
-<div class="bg-white rounded-lg shadow-md">
-    <div class="px-6 py-4 border-b border-gray-200">
-        <h2 class="text-lg font-semibold text-gray-900">Recent Activity</h2>
-    </div>
-    <div class="p-6">
-        <div class="text-center py-12">
-            <i data-feather="activity" class="h-16 w-16 text-gray-400 mx-auto mb-4"></i>
-            <h3 class="text-lg font-medium text-gray-900 mb-2">No recent activity</h3>
-            <p class="text-gray-600">Your recent reports and claims will appear here.</p>
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-12">
+    <div class="bg-white rounded-lg shadow-md">
+        <div class="px-6 py-4 border-b border-gray-200">
+            <h2 class="text-lg font-semibold text-gray-900">Recent Activity</h2>
+        </div>
+        <div class="p-6">
+            <div class="text-center py-12">
+                <i data-feather="activity" class="h-16 w-16 text-gray-400 mx-auto mb-4"></i>
+                <h3 class="text-lg font-medium text-gray-900 mb-2">No recent activity</h3>
+                <p class="text-gray-600">Your recent reports and claims will appear here.</p>
+            </div>
         </div>
     </div>
 </div>

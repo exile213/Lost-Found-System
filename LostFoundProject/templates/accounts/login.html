@@ -107,6 +107,12 @@
 {% endblock %}
 {% block extra_js %}
 <script>
-document.querySelector('.role-btn').click();
+    // Only try to click if the element exists
+    document.addEventListener('DOMContentLoaded', function() {
+        var btn = document.querySelector('.role-btn');
+        if (btn) {
+            btn.click();
+        }
+    });
 </script>
 {% endblock %}

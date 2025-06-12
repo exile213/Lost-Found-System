@@ -20,10 +20,18 @@
                 </div>
                 <div class="hidden md:flex items-center space-x-4">
                     {% if user.is_authenticated %}
-                        <a href="{% url 'dashboard' %}" class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">Dashboard</a>
-                        <a href="{% url 'analytics:search' %}" class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">Search</a>
-                        <a href="{% url 'reports:my_reports' %}" class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">My Reports</a>
-                        <a href="{% url 'user_guide' %}" class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">Help</a>
+                        <a href="{% url 'dashboard' %}" class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium flex items-center" title="Dashboard">
+                            <i data-feather="home" class="h-5 w-5"></i>
+                        </a>
+                        <a href="{% url 'analytics:search' %}" class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium flex items-center" title="Search">
+                            <i data-feather="search" class="h-5 w-5"></i>
+                        </a>
+                        <a href="{% url 'reports:my_reports' %}" class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium flex items-center" title="My Reports">
+                            <i data-feather="folder" class="h-5 w-5"></i>
+                        </a>
+                        <a href="{% url 'user_guide' %}" class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium flex items-center" title="Help">
+                            <i data-feather="help-circle" class="h-5 w-5"></i>
+                        </a>
                     {% else %}
                         <a href="{% url 'accounts:login' %}" class="group relative bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-6 py-3 rounded-xl text-sm font-medium transition-all duration-300 hover:shadow-lg hover:shadow-indigo-500/25 hover:-translate-y-0.5">
                             <span class="relative z-10">Access Portal</span>
@@ -33,24 +41,19 @@
                 </div>
                 {% if user.is_authenticated %}
                 <div class="flex items-center space-x-4">
-                    <a href="{% url 'reports:report_lost' %}" class="text-gray-600 hover:text-indigo-600 transition-colors">
+                    <a href="{% url 'reports:report_lost' %}" class="text-gray-600 hover:text-indigo-600 transition-colors flex items-center" title="Report Lost">
                         <i data-feather="plus-circle" class="h-5 w-5"></i>
-                        <span class="ml-2">Report Lost</span>
                     </a>
-                    <a href="{% url 'reports:report_found' %}" class="text-gray-600 hover:text-indigo-600 transition-colors">
+                    <a href="{% url 'reports:report_found' %}" class="text-gray-600 hover:text-indigo-600 transition-colors flex items-center" title="Report Found">
                         <i data-feather="plus-square" class="h-5 w-5"></i>
-                        <span class="ml-2">Report Found</span>
                     </a>
-                    <div class="relative group">
-                        <button class="flex items-center space-x-2 text-gray-600 hover:text-indigo-600 transition-colors">
-                            <img src="{% static 'img/default-avatar.png' %}" alt="Profile" class="w-8 h-8 rounded-full">
-                            <span>{{ user.username }}</span>
-                        </button>
-                        <div class="absolute right-0 w-48 mt-2 py-2 bg-white rounded-md shadow-xl hidden group-hover:block">
-                            <a href="{% url 'profile' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Profile</a>
-                            <a href="{% url 'accounts:logout' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Logout</a>
-                        </div>
-                    </div>
+                    <a href="{% url 'accounts:profile' %}" class="flex items-center space-x-2 text-gray-600 hover:text-indigo-600 transition-colors" title="Profile">
+                        <img src="{% static 'img/default-avatar.png' %}" alt="Profile" class="w-8 h-8 rounded-full">
+                        <span class="hidden md:inline">{{ user.username }}</span>
+                    </a>
+                    <a href="{% url 'accounts:logout' %}" class="text-gray-600 hover:text-red-600 transition-colors px-3 py-2 rounded-md text-sm font-medium border border-red-100 hover:border-red-300 bg-white flex items-center" title="Logout">
+                        <i data-feather="log-out" class="h-5 w-5"></i>
+                    </a>
                 </div>
                 {% endif %}
             </div>

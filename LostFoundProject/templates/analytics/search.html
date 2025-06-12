@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block title %}Search - Campus Lost and Found{% endblock %}
+{% block content %}
+<div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+    <div class="mb-8">
+        <h1 class="text-3xl font-bold text-gray-900 mb-2">Search Lost &amp; Found Items</h1>
+        <p class="text-gray-600">Browse and search for lost or found items on campus.</p>
+    </div>
+    <!-- Add search/filter form and results here -->
+    <div class="bg-white rounded-lg shadow-md p-6">
+        <form method="get" class="mb-6 flex flex-col md:flex-row gap-4">
+            <input type="text" name="q" placeholder="Search by keyword..." class="flex-1 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            <button type="submit" class="px-6 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition">Search</button>
+        </form>
+        <div class="text-gray-500 text-center py-8">
+            <i data-feather="search" class="h-12 w-12 mx-auto mb-4"></i>
+            <p>No search results yet. Try searching for an item.</p>
+        </div>
+    </div>
+</div>
+{% endblock %}
