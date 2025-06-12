@@ -1,0 +1,170 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ report.title }} - Report Details{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+    <!-- Header -->
+    <div class="mb-8">
+        <div class="flex items-center justify-between">
+            <div>
+                <h1 class="text-3xl font-bold text-gray-900 mb-2">{{ report.title }}</h1>
+                <p class="text-gray-600">
+                    {% if report.status == 'lost' %}
+                        Lost Item Report
+                    {% elif report.status == 'found' %}
+                        Found Item Report
+                    {% else %}
+                        Item Report
+                    {% endif %}
+                </p>
+            </div>
+            <div class="flex items-center space-x-3">
+                <a href="{% url 'reports:my_reports' %}" class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                    <i data-feather="arrow-left" class="h-4 w-4 mr-2"></i>
+                    Back to Reports
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Report Details -->
+    <div class="bg-white rounded-lg shadow-md overflow-hidden">
+        <!-- Status Header -->
+        <div class="px-6 py-4 border-b border-gray-200">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <div class="p-2 rounded-full {% if report.status == 'lost' %}bg-red-100{% elif report.status == 'found' %}bg-green-100{% else %}bg-blue-100{% endif %}">
+                        <i data-feather="{% if report.status == 'lost' %}alert-circle{% elif report.status == 'found' %}plus-circle{% else %}check-circle{% endif %}" class="h-6 w-6 {% if report.status == 'lost' %}text-red-600{% elif report.status == 'found' %}text-green-600{% else %}text-blue-600{% endif %}"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-lg font-semibold text-gray-900">{{ report.title }}</h2>
+                        <p class="text-sm text-gray-600">{{ report.get_category_display }} • {{ report.get_location_display }}</p>
+                    </div>
+                </div>
+                <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium 
+                    {% if report.status == 'lost' %}bg-yellow-100 text-yellow-800{% elif report.status == 'found' %}bg-blue-100 text-blue-800{% elif report.status == 'claimed' %}bg-green-100 text-green-800{% else %}bg-gray-100 text-gray-800{% endif %}">
+                    {{ report.get_status_display }}
+                </span>
+            </div>
+        </div>
+
+        <!-- Report Information -->
+        <div class="px-6 py-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Left Column -->
+                <div class="space-y-6">
+                    <!-- Description -->
+                    <div>
+                        <h3 class="text-lg font-medium text-gray-900 mb-3">Description</h3>
+                        <div class="bg-gray-50 rounded-lg p-4">
+                            <p class="text-gray-700">{{ report.description|linebreaks }}</p>
+                        </div>
+                    </div>
+
+                    <!-- Location Details -->
+                    <div>
+                        <h3 class="text-lg font-medium text-gray-900 mb-3">Location Details</h3>
+                        <div class="bg-gray-50 rounded-lg p-4">
+                            <div class="space-y-2">
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Location:</span>
+                                    <span class="font-medium">{{ report.get_location_display }}</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Category:</span>
+                                    <span class="font-medium">{{ report.get_category_display }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column -->
+                <div class="space-y-6">
+                    <!-- Date and Time -->
+                    <div>
+                        <h3 class="text-lg font-medium text-gray-900 mb-3">Date & Time</h3>
+                        <div class="bg-gray-50 rounded-lg p-4">
+                            <div class="space-y-2">
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">
+                                        {% if report.status == 'lost' %}Date Lost:{% elif report.status == 'found' %}Date Found:{% else %}Date:{% endif %}
+                                    </span>
+                                    <span class="font-medium">{{ report.date_lost_or_found }}</span>
+                                </div>
+                                {% if report.time_lost_or_found %}
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">
+                                        {% if report.status == 'lost' %}Time Lost:{% elif report.status == 'found' %}Time Found:{% else %}Time:{% endif %}
+                                    </span>
+                                    <span class="font-medium">{{ report.time_lost_or_found }}</span>
+                                </div>
+                                {% endif %}
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Reported:</span>
+                                    <span class="font-medium">{{ report.timestamp_reported|date:"M d, Y" }} at {{ report.timestamp_reported|time:"g:i A" }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Reporter Information -->
+                    <div>
+                        <h3 class="text-lg font-medium text-gray-900 mb-3">Reporter Information</h3>
+                        <div class="bg-gray-50 rounded-lg p-4">
+                            <div class="space-y-2">
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Reported by:</span>
+                                    <span class="font-medium">{{ report.reporter.username }}</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Email:</span>
+                                    <span class="font-medium">{{ report.reporter.email }}</span>
+                                </div>
+                                {% if report.reporter.first_name or report.reporter.last_name %}
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Name:</span>
+                                    <span class="font-medium">{{ report.reporter.first_name }} {{ report.reporter.last_name }}</span>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Item Image -->
+                    {% if report.image %}
+                    <div>
+                        <h3 class="text-lg font-medium text-gray-900 mb-3">Item Image</h3>
+                        <div class="bg-gray-50 rounded-lg p-4">
+                            <img src="{{ report.image.url }}" alt="{{ report.title }}" class="w-full h-48 object-cover rounded-lg">
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="px-6 py-4 bg-gray-50 border-t border-gray-200">
+            <div class="flex justify-end space-x-3">
+                <a href="{% url 'reports:my_reports' %}" class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                    <i data-feather="arrow-left" class="h-4 w-4 mr-2"></i>
+                    Back to Reports
+                </a>
+                {% if report.status == 'lost' %}
+                <a href="{% url 'reports:report_lost' %}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+                    <i data-feather="plus" class="h-4 w-4 mr-2"></i>
+                    Report Another Lost Item
+                </a>
+                {% elif report.status == 'found' %}
+                <a href="{% url 'reports:report_found' %}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                    <i data-feather="plus" class="h-4 w-4 mr-2"></i>
+                    Report Another Found Item
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

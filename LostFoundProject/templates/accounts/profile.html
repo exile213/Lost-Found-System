@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+
+{% block title %}Profile - Campus Lost and Found{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto py-10 px-4 sm:px-6 lg:px-8">
+    <h1 class="text-4xl font-bold text-gray-900 mb-8">My Profile</h1>
+    <div class="bg-white rounded-lg shadow-lg p-8 flex flex-col md:flex-row gap-8">
+        <!-- Profile Picture -->
+        <div class="flex-shrink-0 flex flex-col items-center md:items-start">
+            <div class="h-32 w-32 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden mb-4">
+                <i data-feather="user" class="h-20 w-20 text-gray-400"></i>
+            </div>
+            <button class="mt-2 px-4 py-2 bg-indigo-600 text-white rounded-md text-sm hover:bg-indigo-700">Change Photo</button>
+        </div>
+        <!-- Profile Details -->
+        <div class="flex-1">
+            <div class="mb-6">
+                <h2 class="text-2xl font-semibold text-gray-800 mb-2">{{ user.get_full_name|default:user.username }}</h2>
+                <p class="text-gray-600">Member since {{ user.date_joined|date:'F Y' }}</p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Username</label>
+                    <div class="mt-1 p-2 bg-gray-100 rounded">{{ user.username }}</div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Email</label>
+                    <div class="mt-1 p-2 bg-gray-100 rounded">{{ user.email }}</div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">First Name</label>
+                    <div class="mt-1 p-2 bg-gray-100 rounded">{{ user.first_name }}</div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Last Name</label>
+                    <div class="mt-1 p-2 bg-gray-100 rounded">{{ user.last_name }}</div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Date Joined</label>
+                    <div class="mt-1 p-2 bg-gray-100 rounded">{{ user.date_joined|date:'Y-m-d' }}</div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Last Login</label>
+                    <div class="mt-1 p-2 bg-gray-100 rounded">{{ user.last_login|date:'Y-m-d H:i' }}</div>
+                </div>
+            </div>
+            <div class="mt-8 flex gap-4">
+                <a href="{% url 'accounts:edit_profile' %}" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">Edit Profile</a>
+                <a href="{% url 'accounts:change_password' %}" class="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300">Change Password</a>
+            </div>
+        </div>
+    </div>
+    <!-- Activity Section -->
+    <div class="mt-12">
+        <h2 class="text-xl font-semibold text-gray-800 mb-4">Recent Activity</h2>
+        <div class="bg-white rounded-lg shadow p-6">
+            <p class="text-gray-500">Your recent lost and found reports, claims, and actions will appear here.</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

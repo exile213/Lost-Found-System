@@ -13,19 +13,19 @@ def profile(request):
     return render(request, 'profile.html')
 
 def report_lost(request):
-    return render(request, 'report-lost.html')
+    return render(request, 'reports/report-lost.html')
 
 def report_found(request):
-    return render(request, 'report-found.html')
+    return render(request, 'reports/report-found.html')
 
 def search(request):
     return render(request, 'search.html')
 
 def my_reports(request):
-    return render(request, 'my-reports.html')
+    return render(request, 'reports/my-reports.html')
 
 def claim_item(request):
     return render(request, 'claim-item.html')
 
 def user_guide(request):
-    return render(request, 'user-guide.html') 
+    return render(request, 'user-guide.html')

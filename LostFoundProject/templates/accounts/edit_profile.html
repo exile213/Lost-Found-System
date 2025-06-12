@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% block title %}Edit Profile - Campus Lost and Found{% endblock %}
+{% block content %}
+<div class="max-w-xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+    <h1 class="text-2xl font-bold text-gray-900 mb-6">Edit Profile</h1>
+    <div class="bg-white rounded-lg shadow-md p-6">
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <div class="mt-6 flex justify-end">
+                <button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700">Save Changes</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
