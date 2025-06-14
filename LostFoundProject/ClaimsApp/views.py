@@ -77,7 +77,6 @@ def claim_verification(request, claim_id, action):
         claim.save()
         messages.success(request, f'Claim for {claim.item.title} has been approved.')
     elif action == 'reject':
-        claim.is_verified = False
         claim.verified_by = request.user
         claim.verified_at = timezone.now()
         claim.save()

@@ -86,17 +86,17 @@
                 </div>
 
                 <div>
-                    <label for="{{ form.proof_of_ownership.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                    <label for="{{ form.additional_proof.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
                         <i data-feather="file" class="h-4 w-4 inline mr-1"></i>
                         Proof of Ownership (Optional)
                     </label>
                     <input type="file" 
-                           name="{{ form.proof_of_ownership.name }}" 
-                           id="{{ form.proof_of_ownership.id_for_label }}" 
+                           name="{{ form.additional_proof.name }}" 
+                           id="{{ form.additional_proof.id_for_label }}" 
                            class="block w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition duration-200"
                            accept="image/*,.pdf,.doc,.docx">
-                    {% if form.proof_of_ownership.errors %}
-                        <p class="mt-1 text-sm text-red-600">{{ form.proof_of_ownership.errors.0 }}</p>
+                    {% if form.additional_proof.errors %}
+                        <p class="mt-1 text-sm text-red-600">{{ form.additional_proof.errors.0 }}</p>
                     {% endif %}
                     <p class="mt-1 text-sm text-gray-500">Upload photos, receipts, or documents that prove this item belongs to you.</p>
                 </div>

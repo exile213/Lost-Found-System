@@ -20,18 +20,16 @@
                             <!-- Item Header -->
                             <div class="flex items-center justify-between">
                                 <h3 class="text-xl font-semibold text-gray-900">{{ claim.item.title }}</h3>
-                                {% if claim.is_verified %}
-                                    {% if claim.verified_by %}
-                                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
-                                            <i data-feather="check-circle" class="h-4 w-4 mr-1"></i>
-                                            Approved
-                                        </span>
-                                    {% else %}
-                                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-red-100 text-red-800">
-                                            <i data-feather="x-circle" class="h-4 w-4 mr-1"></i>
-                                            Rejected
-                                        </span>
-                                    {% endif %}
+                                {% if claim.is_verified and claim.verified_by %}
+                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
+                                        <i data-feather="check-circle" class="h-4 w-4 mr-1"></i>
+                                        Approved
+                                    </span>
+                                {% elif claim.verified_by and claim.verified_at %}
+                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-red-100 text-red-800">
+                                        <i data-feather="x-circle" class="h-4 w-4 mr-1"></i>
+                                        Rejected
+                                    </span>
                                 {% else %}
                                     <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-yellow-100 text-yellow-800">
                                         <i data-feather="clock" class="h-4 w-4 mr-1"></i>
@@ -65,9 +63,13 @@
                                         </div>
                                         <div class="flex items-center">
                                             <i data-feather="calendar" class="h-4 w-4 text-gray-400 mr-2"></i>
-                                            <span class="text-sm text-gray-600"><strong>Verified at:</strong> {{ claim.verified_at|date:'M d, Y \a\t g:i A' }}</span>
+                                            <span class="text-sm text-gray-600"><strong>Approved at:</strong> {{ claim.verified_at|date:'M d, Y \a\t g:i A' }}</span>
                                         </div>
-                                    {% elif claim.is_verified and claim.verified_at %}
+                                    {% elif claim.verified_by and claim.verified_at %}
+                                        <div class="flex items-center">
+                                            <i data-feather="user-x" class="h-4 w-4 text-gray-400 mr-2"></i>
+                                            <span class="text-sm text-gray-600"><strong>Rejected by:</strong> {{ claim.verified_by.get_full_name|default:claim.verified_by.username }}</span>
+                                        </div>
                                         <div class="flex items-center">
                                             <i data-feather="calendar" class="h-4 w-4 text-gray-400 mr-2"></i>
                                             <span class="text-sm text-gray-600"><strong>Rejected at:</strong> {{ claim.verified_at|date:'M d, Y \a\t g:i A' }}</span>
@@ -94,10 +96,15 @@
                                     <i data-feather="eye" class="h-4 w-4 mr-2"></i>
                                     View Item Details
                                 </a>
-                                {% if not claim.is_verified %}
+                                {% if not claim.is_verified and not claim.verified_by %}
                                     <span class="inline-flex items-center px-4 py-2 bg-gray-100 text-gray-500 text-sm font-medium rounded-md">
                                         <i data-feather="clock" class="h-4 w-4 mr-2"></i>
                                         Under Review
+                                    </span>
+                                {% elif claim.verified_by and not claim.is_verified %}
+                                    <span class="inline-flex items-center px-4 py-2 bg-red-100 text-red-600 text-sm font-medium rounded-md">
+                                        <i data-feather="x-circle" class="h-4 w-4 mr-2"></i>
+                                        Claim Rejected
                                     </span>
                                 {% endif %}
                             </div>

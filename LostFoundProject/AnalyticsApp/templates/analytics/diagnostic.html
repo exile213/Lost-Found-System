@@ -1,0 +1,462 @@
+{% extends 'base.html' %}
+
+{% block title %}Diagnostic Analytics - Campus Lost and Found{% endblock %}
+
+{% block extra_head %}
+<!-- Chart.js CDN - Multiple fallback options -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.js"></script>
+<script>
+// Fallback if the first CDN fails
+if (typeof Chart === 'undefined') {
+    document.write('<script src="https://unpkg.com/chart.js@4.4.0/dist/chart.umd.js"><\/script>');
+}
+</script>
+<style>
+    .chart-container {
+        position: relative;
+        height: 400px;
+        width: 100%;
+        margin-bottom: 20px;
+    }
+    .insight-card {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border-radius: 12px;
+        padding: 20px;
+        margin-top: 20px;
+    }
+    .tab-content {
+        display: none;
+        animation: fadeIn 0.3s ease-in-out;
+    }
+    .tab-content.active {
+        display: block;
+    }
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+    <!-- Header Section -->
+    <div class="mb-8">
+        <div class="flex items-center justify-between">
+            <div>
+                <h1 class="text-3xl font-bold text-gray-900 mb-2">Diagnostic Analytics</h1>
+                <p class="text-gray-600">Suggest why item loss may be occurring</p>
+            </div>
+            <div class="flex items-center space-x-3">
+                <a href="{% url 'analytics:descriptive' %}" 
+                   class="inline-flex items-center px-4 py-2 bg-gray-600 text-white text-sm font-medium rounded-lg hover:bg-gray-700 transition duration-200">
+                    <svg class="h-4 w-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                    </svg>
+                    Descriptive Analytics
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filter Bar -->
+    <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+        <form method="GET" action="{% url 'analytics:diagnostic' %}" class="flex flex-wrap gap-4 items-end">
+            <div class="flex flex-col min-w-[160px]">
+                <label class="text-sm font-medium text-gray-700 mb-1">Date From</label>
+                <input type="date" name="date_from" value="{{ date_from }}" 
+                       class="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+            </div>
+            <div class="flex flex-col min-w-[160px]">
+                <label class="text-sm font-medium text-gray-700 mb-1">Date To</label>
+                <input type="date" name="date_to" value="{{ date_to }}" 
+                       class="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+            </div>
+            <div class="flex gap-2">
+                <button type="submit" 
+                        class="px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-md hover:bg-indigo-700 transition duration-200">
+                    Apply Filters
+                </button>
+                <a href="{% url 'analytics:diagnostic' %}" 
+                   class="px-4 py-2 bg-gray-600 text-white text-sm font-medium rounded-md hover:bg-gray-700 transition duration-200">
+                    Clear
+                </a>
+            </div>
+        </form>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <div class="flex border-b-2 border-gray-200 mb-6 gap-2 overflow-x-auto">
+        <button class="nav-tab active" data-tab="reporters">
+            <span class="flex items-center">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                </svg>
+                Frequent Reporters
+            </span>
+        </button>
+        <button class="nav-tab" data-tab="departments">
+            <span class="flex items-center">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                </svg>
+                Department Losses
+            </span>
+        </button>
+    </div>
+
+    <!-- Most Frequent Item Reporters Tab -->
+    <div id="reporters" class="tab-content active">
+        <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">Users with the Most Lost Item Reports</h3>
+            <p class="text-gray-600 mb-4">Identify users with repeat loss behavior</p>
+            <div class="chart-container">
+                <canvas id="reportersChart"></canvas>
+            </div>
+            <div class="bg-gray-50 rounded-lg p-4 mt-4">
+                <h4 class="text-md font-medium text-gray-900 mb-3">Summary Table</h4>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-100">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Username</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Department</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Report Count</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Percentage</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            {% for reporter in active_reporters %}
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ reporter.reporter__username }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ reporter.reporter__department|default:"N/A" }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ reporter.report_count }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{% widthratio reporter.report_count total_reports 100 %}%</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="insight-card">
+                <p class="text-sm">
+                    <strong>Insight:</strong> 
+                    {% with top_reporter=active_reporters.first %}
+                    {% if top_reporter %}
+                    <strong>{{ top_reporter.reporter__username }}</strong> has reported {{ top_reporter.report_count }} lost items, 
+                    accounting for {% widthratio top_reporter.report_count total_reports 100 %}% of all reports. This recurring 
+                    behavior may indicate either a helpful community member who frequently reports found items, or someone 
+                    who needs additional support with item management and organization skills.
+                    {% endif %}
+                    {% endwith %}
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Departments with the Most Lost Items Tab -->
+    <div id="departments" class="tab-content">
+        <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">Item Losses by Department</h3>
+            <p class="text-gray-600 mb-4">Suggest department-based trends and environmental causes</p>
+            <div class="chart-container">
+                <canvas id="departmentChart"></canvas>
+            </div>
+            <div class="bg-gray-50 rounded-lg p-4 mt-4">
+                <h4 class="text-md font-medium text-gray-900 mb-3">Summary Table</h4>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-100">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Department</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Loss Count</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Percentage</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            {% for item in department_analytics %}
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ item.reporter__department }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ item.count }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{% widthratio item.count total_reports 100 %}%</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="insight-card">
+                <p class="text-sm">
+                    <strong>Insight:</strong> 
+                    {% with first_dept=department_analytics.first %}
+                    {% if first_dept %}
+                    The <strong>{{ first_dept.reporter__department }}</strong> department shows the highest item loss count, 
+                    suggesting department-based trends and potential environmental causes. This may be due to the nature 
+                    of work in this department, shared workspaces, or specific activities that increase the risk of 
+                    item loss. Consider implementing department-specific awareness programs and security measures.
+                    {% endif %}
+                    {% endwith %}
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Global chart instances to prevent memory leaks
+let chartInstances = {};
+
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('Diagnostic Analytics - DOM Content Loaded');
+    
+    // Try to load Chart.js with multiple strategies
+    loadChartJS().then(() => {
+        console.log('Chart.js loaded successfully');
+        initializeTabs();
+        initializeActiveTab();
+    }).catch(error => {
+        console.error('Failed to load Chart.js:', error);
+        showChartError();
+    });
+});
+
+function loadChartJS() {
+    return new Promise((resolve, reject) => {
+        let attempts = 0;
+        const maxAttempts = 100; // 10 seconds max wait
+        
+        const checkChartJS = () => {
+            attempts++;
+            if (typeof Chart !== 'undefined') {
+                resolve();
+            } else if (attempts >= maxAttempts) {
+                // Try loading from a different CDN as last resort
+                const script = document.createElement('script');
+                script.src = 'https://unpkg.com/chart.js@4.4.0/dist/chart.umd.js';
+                script.onload = () => {
+                    if (typeof Chart !== 'undefined') {
+                        resolve();
+                    } else {
+                        reject(new Error('Chart.js failed to load from all sources'));
+                    }
+                };
+                script.onerror = () => reject(new Error('Chart.js failed to load from all sources'));
+                document.head.appendChild(script);
+            } else {
+                setTimeout(checkChartJS, 100);
+            }
+        };
+        
+        checkChartJS();
+    });
+}
+
+function showChartError() {
+    const chartContainers = document.querySelectorAll('.chart-container');
+    chartContainers.forEach(container => {
+        container.innerHTML = `
+            <div class="flex items-center justify-center h-full bg-gray-100 rounded-lg">
+                <div class="text-center">
+                    <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                    </svg>
+                    <p class="mt-2 text-sm text-gray-500">Chart loading failed</p>
+                </div>
+            </div>
+        `;
+    });
+}
+
+function initializeTabs() {
+    console.log('Initializing tabs...');
+    const tabs = document.querySelectorAll('.nav-tab');
+    const contents = document.querySelectorAll('.tab-content');
+    
+    tabs.forEach(tab => {
+        tab.addEventListener('click', function() {
+            const targetTab = this.getAttribute('data-tab');
+            console.log('Tab clicked:', targetTab);
+            
+            // Remove active class from all tabs and contents
+            tabs.forEach(t => t.classList.remove('active'));
+            contents.forEach(c => c.classList.remove('active'));
+            
+            // Add active class to clicked tab and corresponding content
+            this.classList.add('active');
+            const targetContent = document.getElementById(targetTab);
+            if (targetContent) {
+                targetContent.classList.add('active');
+                console.log('Activated content:', targetTab);
+                
+                // Initialize chart for the newly active tab
+                setTimeout(() => {
+                    initializeChartForTab(targetTab);
+                }, 100);
+            }
+        });
+    });
+}
+
+function initializeActiveTab() {
+    const activeTab = document.querySelector('.nav-tab.active');
+    if (activeTab) {
+        const activeTabId = activeTab.getAttribute('data-tab');
+        initializeChartForTab(activeTabId);
+    }
+}
+
+function initializeChartForTab(tabId) {
+    console.log('Initializing chart for tab:', tabId);
+    
+    // Destroy existing chart for this tab
+    if (chartInstances[tabId]) {
+        chartInstances[tabId].destroy();
+        delete chartInstances[tabId];
+    }
+    
+    try {
+        const chartData = {{ chart_data|safe }};
+        
+        if (tabId === 'reporters') {
+            const reportersCtx = document.getElementById('reportersChart');
+            if (reportersCtx && chartData.active_reporters) {
+                console.log('Creating reporters chart');
+                chartInstances[tabId] = new Chart(reportersCtx.getContext('2d'), {
+                    type: 'bar',
+                    data: {
+                        labels: chartData.active_reporters.labels,
+                        datasets: [{
+                            label: 'Report Count',
+                            data: chartData.active_reporters.data,
+                            backgroundColor: '#EF4444',
+                            borderColor: '#DC2626',
+                            borderWidth: 1,
+                            borderRadius: 4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        indexAxis: 'y',
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
+                        },
+                        scales: {
+                            x: {
+                                beginAtZero: true,
+                                grid: {
+                                    color: '#f3f4f6'
+                                }
+                            },
+                            y: {
+                                grid: {
+                                    display: false
+                                }
+                            }
+                        }
+                    }
+                });
+                console.log('Reporters chart created successfully');
+            }
+        } else if (tabId === 'departments') {
+            const departmentCtx = document.getElementById('departmentChart');
+            if (departmentCtx && chartData.departments) {
+                console.log('Creating department chart');
+                chartInstances[tabId] = new Chart(departmentCtx.getContext('2d'), {
+                    type: 'bar',
+                    data: {
+                        labels: chartData.departments.labels,
+                        datasets: [{
+                            label: 'Loss Count',
+                            data: chartData.departments.data,
+                            backgroundColor: '#8B5CF6',
+                            borderColor: '#7C3AED',
+                            borderWidth: 1,
+                            borderRadius: 4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                grid: {
+                                    color: '#f3f4f6'
+                                }
+                            },
+                            x: {
+                                grid: {
+                                    display: false
+                                }
+                            }
+                        }
+                    }
+                });
+                console.log('Department chart created successfully');
+            }
+        }
+    } catch (error) {
+        console.error('Error creating chart for tab:', tabId, error);
+    }
+}
+</script>
+
+<style>
+/* Enhanced tab styling with regular CSS */
+.nav-tab {
+    padding: 0.75rem 1.5rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #4b5563;
+    background-color: #f3f4f6;
+    border: 1px solid #d1d5db;
+    border-top-left-radius: 0.5rem;
+    border-top-right-radius: 0.5rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+}
+
+.nav-tab:hover {
+    background-color: #e5e7eb;
+    color: #1f2937;
+}
+
+.nav-tab.active {
+    background-color: white;
+    color: #4f46e5;
+    border-color: #4f46e5;
+    border-bottom-color: white;
+    position: relative;
+    z-index: 10;
+}
+
+.nav-tab.active::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background-color: white;
+    z-index: 1;
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+</style>
+{% endblock %} 

@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'AccountsApp',
     'ReportsApp',
     'ClaimsApp',
+    'AnalyticsApp',
     
     # Third party apps
     'crispy_forms',
