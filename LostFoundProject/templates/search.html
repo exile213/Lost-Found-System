@@ -131,8 +131,8 @@
                                 <a href="{% url 'reports:report_detail' item.id %}" class="flex-1 text-center px-3 py-2 bg-indigo-600 text-white text-sm font-medium rounded-md hover:bg-indigo-700 transition duration-200">
                                     View Details
                                 </a>
-                                {% if item.status == 'found' and user != item.reporter %}
-                                    <a href="{% url 'claim_item' %}?item_id={{ item.id }}" class="px-3 py-2 bg-green-600 text-white text-sm font-medium rounded-md hover:bg-green-700 transition duration-200">
+                                {% if item.status == 'found' and user.is_authenticated and user != item.reporter %}
+                                    <a href="{% url 'claims:claim_item' item.id %}" class="px-3 py-2 bg-green-600 text-white text-sm font-medium rounded-md hover:bg-green-700 transition duration-200">
                                         Claim
                                     </a>
                                 {% endif %}

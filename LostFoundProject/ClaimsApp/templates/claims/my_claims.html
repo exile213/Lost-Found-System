@@ -1,0 +1,133 @@
+{% extends 'base.html' %}
+
+{% block title %}My Claims - Campus Lost and Found{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+    <!-- Header Section -->
+    <div class="mb-8">
+        <h1 class="text-3xl font-bold text-gray-900 mb-2">My Claim Requests</h1>
+        <p class="text-gray-600">Track the status of your item claims</p>
+    </div>
+
+    {% if claims %}
+        <!-- Claims List -->
+        <div class="space-y-6">
+            {% for claim in claims %}
+                <div class="bg-white rounded-lg shadow-md border border-gray-200 p-6 hover:shadow-lg transition duration-200">
+                    <div class="flex items-start justify-between">
+                        <div class="flex-1 space-y-4">
+                            <!-- Item Header -->
+                            <div class="flex items-center justify-between">
+                                <h3 class="text-xl font-semibold text-gray-900">{{ claim.item.title }}</h3>
+                                {% if claim.is_verified %}
+                                    {% if claim.verified_by %}
+                                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
+                                            <i data-feather="check-circle" class="h-4 w-4 mr-1"></i>
+                                            Approved
+                                        </span>
+                                    {% else %}
+                                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-red-100 text-red-800">
+                                            <i data-feather="x-circle" class="h-4 w-4 mr-1"></i>
+                                            Rejected
+                                        </span>
+                                    {% endif %}
+                                {% else %}
+                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-yellow-100 text-yellow-800">
+                                        <i data-feather="clock" class="h-4 w-4 mr-1"></i>
+                                        Pending Review
+                                    </span>
+                                {% endif %}
+                            </div>
+
+                            <!-- Item Details Grid -->
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="space-y-2">
+                                    <div class="flex items-center">
+                                        <i data-feather="tag" class="h-4 w-4 text-gray-400 mr-2"></i>
+                                        <span class="text-sm text-gray-600"><strong>Category:</strong> {{ claim.item.category|title }}</span>
+                                    </div>
+                                    <div class="flex items-center">
+                                        <i data-feather="map-pin" class="h-4 w-4 text-gray-400 mr-2"></i>
+                                        <span class="text-sm text-gray-600"><strong>Location:</strong> {{ claim.item.location }}</span>
+                                    </div>
+                                    <div class="flex items-center">
+                                        <i data-feather="calendar" class="h-4 w-4 text-gray-400 mr-2"></i>
+                                        <span class="text-sm text-gray-600"><strong>Submitted:</strong> {{ claim.submitted_at|date:'M d, Y \a\t g:i A' }}</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="space-y-2">
+                                    {% if claim.is_verified and claim.verified_by %}
+                                        <div class="flex items-center">
+                                            <i data-feather="user-check" class="h-4 w-4 text-gray-400 mr-2"></i>
+                                            <span class="text-sm text-gray-600"><strong>Verified by:</strong> {{ claim.verified_by.get_full_name|default:claim.verified_by.username }}</span>
+                                        </div>
+                                        <div class="flex items-center">
+                                            <i data-feather="calendar" class="h-4 w-4 text-gray-400 mr-2"></i>
+                                            <span class="text-sm text-gray-600"><strong>Verified at:</strong> {{ claim.verified_at|date:'M d, Y \a\t g:i A' }}</span>
+                                        </div>
+                                    {% elif claim.is_verified and claim.verified_at %}
+                                        <div class="flex items-center">
+                                            <i data-feather="calendar" class="h-4 w-4 text-gray-400 mr-2"></i>
+                                            <span class="text-sm text-gray-600"><strong>Rejected at:</strong> {{ claim.verified_at|date:'M d, Y \a\t g:i A' }}</span>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <!-- Claim Reason -->
+                            <div class="bg-gray-50 rounded-lg p-4">
+                                <div class="flex items-start">
+                                    <i data-feather="message-square" class="h-4 w-4 text-gray-400 mr-2 mt-0.5"></i>
+                                    <div>
+                                        <p class="text-sm font-medium text-gray-700 mb-1">Claim Reason:</p>
+                                        <p class="text-sm text-gray-600">{{ claim.reason }}</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Action Buttons -->
+                            <div class="flex gap-3 pt-2">
+                                <a href="{% url 'reports:report_detail' claim.item.id %}" 
+                                   class="inline-flex items-center px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-md hover:bg-indigo-700 transition duration-200">
+                                    <i data-feather="eye" class="h-4 w-4 mr-2"></i>
+                                    View Item Details
+                                </a>
+                                {% if not claim.is_verified %}
+                                    <span class="inline-flex items-center px-4 py-2 bg-gray-100 text-gray-500 text-sm font-medium rounded-md">
+                                        <i data-feather="clock" class="h-4 w-4 mr-2"></i>
+                                        Under Review
+                                    </span>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Item Image -->
+                        {% if claim.item.image %}
+                            <div class="ml-6 flex-shrink-0">
+                                <img src="{{ claim.item.image.url }}" alt="{{ claim.item.title }}" 
+                                     class="w-24 h-24 object-cover rounded-lg shadow-sm">
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <!-- Empty State -->
+        <div class="text-center py-12">
+            <div class="mx-auto w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mb-6">
+                <i data-feather="file-text" class="h-12 w-12 text-gray-400"></i>
+            </div>
+            <h3 class="text-lg font-medium text-gray-900 mb-2">No claim requests yet</h3>
+            <p class="text-gray-600 mb-6">You haven't submitted any claim requests for found items.</p>
+            <a href="{% url 'search' %}" 
+               class="inline-flex items-center px-6 py-3 bg-indigo-600 text-white text-sm font-medium rounded-md hover:bg-indigo-700 transition duration-200">
+                <i data-feather="search" class="h-4 w-4 mr-2"></i>
+                Browse Found Items
+            </a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %} 

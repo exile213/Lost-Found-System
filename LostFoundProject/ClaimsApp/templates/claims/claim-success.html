@@ -1,0 +1,8 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="max-w-lg mx-auto mt-10 p-6 bg-white rounded shadow text-center">
+    <h2 class="text-2xl font-bold mb-4 text-green-700">Claim Submitted!</h2>
+    <p class="mb-4">Your claim request for <strong>{{ item.title }}</strong> has been submitted and is pending staff verification.</p>
+    <a href="/dashboard/" class="inline-block bg-indigo-600 text-white px-4 py-2 rounded">Back to Dashboard</a>
+</div>
+{% endblock %} 

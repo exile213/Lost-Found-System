@@ -1,20 +1,183 @@
 {% extends 'base.html' %}
-{% block title %}Search - Campus Lost and Found{% endblock %}
+
+{% block title %}Analytics Search - Campus Lost and Found{% endblock %}
+
 {% block content %}
-<div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+<div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+    <!-- Header Section -->
     <div class="mb-8">
-        <h1 class="text-3xl font-bold text-gray-900 mb-2">Search Lost &amp; Found Items</h1>
-        <p class="text-gray-600">Browse and search for lost or found items on campus.</p>
+        <div class="flex items-center justify-between">
+            <div>
+                <h1 class="text-3xl font-bold text-gray-900 mb-2">Analytics Search</h1>
+                <p class="text-gray-600">Search and analyze reports, claims, and user data</p>
+            </div>
+            <div class="flex items-center space-x-3">
+                <a href="{% url 'analytics:dashboard' %}" 
+                   class="inline-flex items-center px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition duration-200">
+                    <i data-feather="bar-chart-2" class="h-4 w-4 mr-2"></i>
+                    Analytics Dashboard
+                </a>
+            </div>
+        </div>
     </div>
-    <!-- Add search/filter form and results here -->
-    <div class="bg-white rounded-lg shadow-md p-6">
-        <form method="get" class="mb-6 flex flex-col md:flex-row gap-4">
-            <input type="text" name="q" placeholder="Search by keyword..." class="flex-1 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500">
-            <button type="submit" class="px-6 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition">Search</button>
+
+    <!-- Search Filters -->
+    <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+        <form method="GET" class="space-y-4">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                    <label for="search" class="block text-sm font-medium text-gray-700 mb-2">Search</label>
+                    <input type="text" id="search" name="search" value="{{ search_query }}" 
+                           class="block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" 
+                           placeholder="Search by item name, user, or description...">
+                </div>
+                <div>
+                    <label for="date_from" class="block text-sm font-medium text-gray-700 mb-2">Date From</label>
+                    <input type="date" id="date_from" name="date_from" value="{{ date_from }}" 
+                           class="block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                </div>
+                <div>
+                    <label for="date_to" class="block text-sm font-medium text-gray-700 mb-2">Date To</label>
+                    <input type="date" id="date_to" name="date_to" value="{{ date_to }}" 
+                           class="block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                </div>
+            </div>
+            <div class="flex justify-between items-center">
+                <div class="flex gap-4">
+                    <button type="submit" 
+                            class="inline-flex items-center px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-md hover:bg-indigo-700 transition duration-200">
+                        <i data-feather="search" class="h-4 w-4 mr-2"></i>
+                        Search
+                    </button>
+                    <a href="{% url 'analytics:search' %}" 
+                       class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 transition duration-200">
+                        Clear Filters
+                    </a>
+                </div>
+                <div class="text-sm text-gray-600">
+                    Found {{ total_results }} results
+                </div>
+            </div>
         </form>
-        <div class="text-gray-500 text-center py-8">
-            <i data-feather="search" class="h-12 w-12 mx-auto mb-4"></i>
-            <p>No search results yet. Try searching for an item.</p>
+    </div>
+
+    <!-- Search Results -->
+    <div class="bg-white rounded-lg shadow-md border border-gray-200">
+        <div class="px-6 py-4 border-b border-gray-200">
+            <div class="flex items-center justify-between">
+                <h2 class="text-xl font-semibold text-gray-900">Search Results</h2>
+                <div class="flex items-center space-x-4">
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800">
+                        {{ total_items }} items found
+                    </span>
+                    <div class="flex items-center space-x-2">
+                        <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-red-100 text-red-800">
+                            {{ lost_count }} Lost
+                        </span>
+                        <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-green-100 text-green-800">
+                            {{ found_count }} Found
+                        </span>
+                        <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-purple-100 text-purple-800">
+                            {{ claimed_count }} Claimed
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="p-6">
+            {% if items %}
+                <div class="space-y-6">
+                    {% for item in items %}
+                        <div class="border border-gray-200 rounded-lg p-6 hover:shadow-md transition duration-200">
+                            <div class="flex items-start justify-between">
+                                <div class="flex-1 space-y-4">
+                                    <!-- Item Header -->
+                                    <div class="flex items-center justify-between">
+                                        <h3 class="text-lg font-semibold text-gray-900">{{ item.title }}</h3>
+                                        <div class="flex items-center space-x-2">
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
+                                                {% if item.status == 'lost' %}bg-red-100 text-red-800
+                                                {% elif item.status == 'found' %}bg-green-100 text-green-800
+                                                {% else %}bg-purple-100 text-purple-800{% endif %}">
+                                                <i data-feather="{% if item.status == 'lost' %}alert-circle{% elif item.status == 'found' %}plus-circle{% else %}check-circle{% endif %}" class="h-3 w-3 mr-1"></i>
+                                                {{ item.status|title }}
+                                            </span>
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                                                {{ item.category|title }}
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    <!-- Item Description -->
+                                    <p class="text-sm text-gray-600 line-clamp-3">{{ item.description }}</p>
+
+                                    <!-- Item Details -->
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div class="space-y-2">
+                                            <div class="flex items-center">
+                                                <i data-feather="map-pin" class="h-4 w-4 text-gray-400 mr-2"></i>
+                                                <span class="text-sm text-gray-600">
+                                                    <strong>Location:</strong> {{ item.location }}
+                                                </span>
+                                            </div>
+                                            <div class="flex items-center">
+                                                <i data-feather="calendar" class="h-4 w-4 text-gray-400 mr-2"></i>
+                                                <span class="text-sm text-gray-600">
+                                                    <strong>Date:</strong> {{ item.date_lost_or_found|date:"M d, Y" }}
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div class="space-y-2">
+                                            <div class="flex items-center">
+                                                <i data-feather="user" class="h-4 w-4 text-gray-400 mr-2"></i>
+                                                <span class="text-sm text-gray-600">
+                                                    <strong>Reporter:</strong> {{ item.reporter.username }}
+                                                </span>
+                                            </div>
+                                            <div class="flex items-center">
+                                                <i data-feather="clock" class="h-4 w-4 text-gray-400 mr-2"></i>
+                                                <span class="text-sm text-gray-600">
+                                                    <strong>Reported:</strong> {{ item.timestamp_reported|date:"M d, Y H:i" }}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Action Buttons -->
+                                    <div class="flex gap-3 pt-2">
+                                        <a href="{% url 'reports:report_detail' item.id %}" 
+                                           class="inline-flex items-center px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-md hover:bg-indigo-700 transition duration-200">
+                                            <i data-feather="eye" class="h-4 w-4 mr-2"></i>
+                                            View Details
+                                        </a>
+                                        {% if item.status == 'found' %}
+                                            <a href="{% url 'search' %}?search={{ item.title }}" 
+                                               class="inline-flex items-center px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-md hover:bg-green-700 transition duration-200">
+                                                <i data-feather="search" class="h-4 w-4 mr-2"></i>
+                                                Check Claims
+                                            </a>
+                                        {% endif %}
+                                        <a href="{% url 'accounts:staff_reports' %}?search={{ item.title }}" 
+                                           class="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 transition duration-200">
+                                            <i data-feather="file-text" class="h-4 w-4 mr-2"></i>
+                                            Manage Report
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="text-center py-12">
+                    <div class="mx-auto w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
+                        <i data-feather="search" class="h-8 w-8 text-gray-400"></i>
+                    </div>
+                    <h3 class="text-lg font-medium text-gray-900 mb-2">No items found</h3>
+                    <p class="text-gray-600">Try adjusting your search criteria or filters.</p>
+                </div>
+            {% endif %}
         </div>
     </div>
 </div>

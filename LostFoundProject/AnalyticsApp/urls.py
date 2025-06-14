@@ -5,4 +5,5 @@ app_name = 'analytics'
 
 urlpatterns = [
     path('dashboard/', views.dashboard, name='dashboard'),
+    path('search/', views.search, name='search'),
 ] 
