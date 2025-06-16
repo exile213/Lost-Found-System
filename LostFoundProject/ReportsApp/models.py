@@ -1,6 +1,27 @@
 from django.db import models
 from AccountsApp.models import User
 
+class Category(models.Model):
+    name = models.CharField(max_length=50, unique=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    def __str__(self):
+        return self.name
+    
+    class Meta:
+        verbose_name_plural = "Categories"
+        ordering = ['name']
+
+class Location(models.Model):
+    name = models.CharField(max_length=100, unique=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    def __str__(self):
+        return self.name
+    
+    class Meta:
+        ordering = ['name']
+
 class ItemReport(models.Model):
     STATUS_CHOICES = [
         ('lost', 'Lost'),
@@ -18,8 +39,12 @@ class ItemReport(models.Model):
 
     title = models.CharField(max_length=100)
     description = models.TextField()
-    category = models.CharField(max_length=20, choices=CATEGORY_CHOICES, default='other')
-    location = models.CharField(max_length=100)
+    # Old fields (to be removed after data migration)
+    category_old = models.CharField(max_length=20, choices=CATEGORY_CHOICES, default='other', null=True, blank=True)
+    location_old = models.CharField(max_length=100, null=True, blank=True)
+    # New ForeignKey fields
+    category = models.ForeignKey(Category, on_delete=models.CASCADE, null=True, blank=True)
+    location = models.ForeignKey(Location, on_delete=models.CASCADE, null=True, blank=True)
     date_lost_or_found = models.DateField()
     time_lost_or_found = models.TimeField(blank=True, null=True)
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='lost')
@@ -28,4 +53,4 @@ class ItemReport(models.Model):
     timestamp_reported = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.title} ({self.status}) - {self.location}"
+        return f"{self.title} ({self.status}) - {self.location.name if self.location else self.location_old}"

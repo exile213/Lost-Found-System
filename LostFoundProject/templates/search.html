@@ -31,7 +31,7 @@
                     <select id="category" name="category" class="block w-full pl-3 pr-10 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
                         <option value="">All Categories</option>
                         {% for cat in categories %}
-                            <option value="{{ cat }}" {% if cat == selected_category %}selected{% endif %}>{{ cat|title }}</option>
+                            <option value="{{ cat.id }}" {% if cat.id|stringformat:"s" == selected_category %}selected{% endif %}>{{ cat.name }}</option>
                         {% endfor %}
                     </select>
                 </div>
@@ -40,7 +40,7 @@
                     <select id="location" name="location" class="block w-full pl-3 pr-10 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
                         <option value="">All Locations</option>
                         {% for loc in locations %}
-                            <option value="{{ loc }}" {% if loc == selected_location %}selected{% endif %}>{{ loc }}</option>
+                            <option value="{{ loc.id }}" {% if loc.id|stringformat:"s" == selected_location %}selected{% endif %}>{{ loc.name }}</option>
                         {% endfor %}
                     </select>
                 </div>
@@ -101,7 +101,7 @@
                                             {{ item.status|title }}
                                         </span>
                                         <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-                                            {{ item.category|title }}
+                                            {{ item.category.name|title }}
                                         </span>
                                     </div>
                                 </div>
@@ -115,7 +115,7 @@
                             <div class="space-y-2 text-sm text-gray-500">
                                 <div class="flex items-center">
                                     <i data-feather="map-pin" class="h-4 w-4 mr-2"></i>
-                                    <span>{{ item.location }}</span>
+                                    <span>{{ item.location.name }}</span>
                                 </div>
                                 <div class="flex items-center">
                                     <i data-feather="calendar" class="h-4 w-4 mr-2"></i>

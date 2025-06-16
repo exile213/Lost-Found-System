@@ -39,7 +39,7 @@
                     </div>
                     <div>
                         <h2 class="text-lg font-semibold text-gray-900">{{ report.title }}</h2>
-                        <p class="text-sm text-gray-600">{{ report.get_category_display }} • {{ report.get_location_display }}</p>
+                        <p class="text-sm text-gray-600">{{ report.category.name|title }} • {{ report.location.name|title }}</p>
                     </div>
                 </div>
                 <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium 
@@ -69,11 +69,11 @@
                             <div class="space-y-2">
                                 <div class="flex justify-between">
                                     <span class="text-gray-600">Location:</span>
-                                    <span class="font-medium">{{ report.get_location_display }}</span>
+                                    <span class="font-medium">{{ report.location.name|title }}</span>
                                 </div>
                                 <div class="flex justify-between">
                                     <span class="text-gray-600">Category:</span>
-                                    <span class="font-medium">{{ report.get_category_display }}</span>
+                                    <span class="font-medium">{{ report.category.name|title }}</span>
                                 </div>
                             </div>
                         </div>

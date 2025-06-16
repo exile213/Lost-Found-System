@@ -117,7 +117,7 @@
                                         <div class="w-2 h-2 rounded-full {% if report.status == 'lost' %}bg-red-500{% elif report.status == 'found' %}bg-green-500{% else %}bg-blue-500{% endif %} mr-3"></div>
                                         <div>
                                             <p class="text-sm font-medium text-gray-900">{{ report.title }}</p>
-                                            <p class="text-xs text-gray-500">{{ report.category|title }} • {{ report.location }}</p>
+                                            <p class="text-xs text-gray-500">{{ report.category.name|title }} • {{ report.location.name|title }}</p>
                                         </div>
                                     </div>
                                     <span class="text-xs text-gray-400">{{ report.timestamp_reported|date:"M d" }}</span>
@@ -166,7 +166,7 @@
                                 <div class="flex items-start justify-between">
                                     <div class="flex-1">
                                         <h3 class="text-sm font-medium text-gray-900">{{ item.title }}</h3>
-                                        <p class="text-xs text-gray-500 mt-1">{{ item.category|title }} • {{ item.location }}</p>
+                                        <p class="text-xs text-gray-500 mt-1">{{ item.category.name|title }} • {{ item.location.name|title }}</p>
                                         <p class="text-xs text-gray-400 mt-1">Found on {{ item.date_lost_or_found|date:"M d, Y" }}</p>
                                     </div>
                                     <a href="{% url 'reports:report_detail' item.id %}" class="ml-4 text-blue-600 hover:text-blue-800 text-sm font-medium">

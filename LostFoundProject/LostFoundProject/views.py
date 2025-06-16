@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
-from ReportsApp.models import ItemReport
+from ReportsApp.models import ItemReport, Category, Location
 from ClaimsApp.models import ClaimRequest
 from django.utils import timezone
 from datetime import timedelta
@@ -42,7 +42,6 @@ def dashboard(request):
         similar_found_items = ItemReport.objects.filter(
             status='found',
             category=lost_report.category,
-            location__icontains=lost_report.location.split()[0] if lost_report.location else '',
             timestamp_reported__gte=lost_report.timestamp_reported
         ).exclude(reporter=user)[:3]
         potential_matches.extend(similar_found_items)
@@ -77,8 +76,8 @@ def report_found(request):
 def search(request):
     # Get search parameters
     search_query = request.GET.get('search', '')
-    category = request.GET.get('category', '')
-    location = request.GET.get('location', '')
+    category_id = request.GET.get('category', '')
+    location_id = request.GET.get('location', '')
     status = request.GET.get('status', '')
     date_filter = request.GET.get('date_filter', '')
     
@@ -90,14 +89,15 @@ def search(request):
         items = items.filter(
             Q(title__icontains=search_query) |
             Q(description__icontains=search_query) |
-            Q(location__icontains=search_query)
+            Q(location__name__icontains=search_query) |
+            Q(category__name__icontains=search_query)
         )
     
-    if category:
-        items = items.filter(category=category)
+    if category_id:
+        items = items.filter(category_id=category_id)
     
-    if location:
-        items = items.filter(location__icontains=location)
+    if location_id:
+        items = items.filter(location_id=location_id)
     
     if status:
         items = items.filter(status=status)
@@ -115,8 +115,8 @@ def search(request):
             items = items.filter(date_lost_or_found__gte=month_ago)
     
     # Get unique categories and locations for filter dropdowns
-    categories = ItemReport.objects.values_list('category', flat=True).distinct()
-    locations = ItemReport.objects.values_list('location', flat=True).distinct()
+    categories = Category.objects.all().order_by('name')
+    locations = Location.objects.all().order_by('name')
     
     # Get counts for each status
     total_items = items.count()
@@ -127,8 +127,8 @@ def search(request):
     context = {
         'items': items,
         'search_query': search_query,
-        'selected_category': category,
-        'selected_location': location,
+        'selected_category': category_id,
+        'selected_location': location_id,
         'selected_status': status,
         'selected_date_filter': date_filter,
         'categories': categories,

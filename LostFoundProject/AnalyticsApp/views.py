@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseForbidden, JsonResponse
 from django.contrib.auth import get_user_model
-from ReportsApp.models import ItemReport
+from ReportsApp.models import ItemReport, Category, Location
 from ClaimsApp.models import ClaimRequest
 from django.db.models import Count, Q, Avg, F
 from django.utils import timezone
@@ -49,17 +49,17 @@ def descriptive_analytics_view(request):
             pass
     
     if category_filter:
-        base_queryset = base_queryset.filter(category=category_filter)
+        base_queryset = base_queryset.filter(category_id=category_filter)
     
     # ==================== DESCRIPTIVE ANALYTICS ====================
     
     # 1. Most commonly lost item categories
-    category_analytics = base_queryset.values('category').annotate(
+    category_analytics = base_queryset.values('category__name').annotate(
         count=Count('id')
     ).order_by('-count')
     
     # 2. Most frequent loss locations
-    location_analytics = base_queryset.values('location').annotate(
+    location_analytics = base_queryset.values('location__name').annotate(
         count=Count('id')
     ).order_by('-count')[:10]
     
@@ -86,12 +86,12 @@ def descriptive_analytics_view(request):
     # Prepare data for Chart.js
     chart_data = {
         'categories': {
-            'labels': [item['category'].title() for item in category_analytics],
-            'data': [item['count'] for item in category_analytics]
+            'labels': [item['category__name'] for item in category_analytics if item['category__name']],
+            'data': [item['count'] for item in category_analytics if item['category__name']]
         },
         'locations': {
-            'labels': [item['location'] for item in location_analytics],
-            'data': [item['count'] for item in location_analytics]
+            'labels': [item['location__name'] for item in location_analytics if item['location__name']],
+            'data': [item['count'] for item in location_analytics if item['location__name']]
         },
         'monthly': {
             'labels': [item['short_month'] for item in monthly_analytics],
@@ -100,7 +100,7 @@ def descriptive_analytics_view(request):
     }
     
     # Get filter options
-    all_categories = ItemReport.objects.values_list('category', flat=True).distinct()
+    all_categories = Category.objects.all().order_by('name')
     
     context = {
         # Descriptive Analytics
@@ -182,7 +182,7 @@ def diagnostic_analytics_view(request):
             claim_rate = (item.successful_claims / item.total_claims) * 100
             item_claim_analytics.append({
                 'item_title': item.title,
-                'category': item.category,
+                'category': item.category.name if item.category else 'Unknown',
                 'total_claims': item.total_claims,
                 'successful_claims': item.successful_claims,
                 'claim_rate': round(claim_rate, 1)
@@ -202,7 +202,7 @@ def diagnostic_analytics_view(request):
     
     # 4. Success rate by category
     category_success_rates = []
-    for category in base_queryset.values_list('category', flat=True).distinct():
+    for category in Category.objects.all():
         category_items = base_queryset.filter(category=category)
         total_items = category_items.count()
         claimed_items = category_items.filter(status='claimed').count()
@@ -210,7 +210,7 @@ def diagnostic_analytics_view(request):
         if total_items > 0:
             success_rate = (claimed_items / total_items) * 100
             category_success_rates.append({
-                'category': category,
+                'category': category.name,
                 'total_items': total_items,
                 'claimed_items': claimed_items,
                 'success_rate': round(success_rate, 1)
@@ -225,7 +225,7 @@ def diagnostic_analytics_view(request):
             'data': [item['count'] for item in department_analytics]
         },
         'category_success': {
-            'labels': [item['category'].title() for item in category_success_rates],
+            'labels': [item['category'] for item in category_success_rates],
             'data': [item['success_rate'] for item in category_success_rates]
         }
     }
@@ -267,7 +267,7 @@ def search(request):
     
     # Get search parameters
     search_query = request.GET.get('search', '')
-    category = request.GET.get('category', '')
+    category_id = request.GET.get('category', '')
     status = request.GET.get('status', '')
     date_filter = request.GET.get('date_filter', '')
     
@@ -279,12 +279,13 @@ def search(request):
         items = items.filter(
             Q(title__icontains=search_query) |
             Q(description__icontains=search_query) |
-            Q(location__icontains=search_query) |
+            Q(location__name__icontains=search_query) |
+            Q(category__name__icontains=search_query) |
             Q(reporter__username__icontains=search_query)
         )
     
-    if category:
-        items = items.filter(category=category)
+    if category_id:
+        items = items.filter(category_id=category_id)
     
     if status:
         items = items.filter(status=status)
@@ -302,7 +303,7 @@ def search(request):
             items = items.filter(date_lost_or_found__gte=month_ago)
     
     # Get unique categories for filter dropdown
-    categories = ItemReport.objects.values_list('category', flat=True).distinct()
+    categories = Category.objects.all().order_by('name')
     
     # Get counts for each status
     total_items = items.count()
@@ -313,7 +314,7 @@ def search(request):
     context = {
         'items': items,
         'search_query': search_query,
-        'category': category,
+        'category': category_id,
         'status': status,
         'date_filter': date_filter,
         'categories': categories,

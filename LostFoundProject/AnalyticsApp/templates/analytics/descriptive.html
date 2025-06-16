@@ -137,7 +137,7 @@ if (typeof Chart === 'undefined') {
                         <tbody class="bg-white divide-y divide-gray-200">
                             {% for item in category_analytics %}
                             <tr>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ item.category|title }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ item.category__name|title }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ item.count }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{% widthratio item.count total_reports 100 %}%</td>
                             </tr>
@@ -151,7 +151,7 @@ if (typeof Chart === 'undefined') {
                     <strong>Insight:</strong> 
                     {% with first_category=category_analytics.first %}
                     {% if first_category %}
-                    This chart suggests that <strong>{{ first_category.category|title }}</strong> items are lost most frequently, 
+                    This chart suggests that <strong>{{ first_category.category__name|title }}</strong> items are lost most frequently, 
                     which may be due to students using shared outlets and study areas. Consider implementing better tracking 
                     systems and awareness campaigns for this category.
                     {% endif %}
@@ -183,7 +183,7 @@ if (typeof Chart === 'undefined') {
                         <tbody class="bg-white divide-y divide-gray-200">
                             {% for item in location_analytics %}
                             <tr>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ item.location }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ item.location__name|title }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ item.count }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{% widthratio item.count total_reports 100 %}%</td>
                             </tr>
@@ -197,7 +197,7 @@ if (typeof Chart === 'undefined') {
                     <strong>Insight:</strong> 
                     {% with first_location=location_analytics.first %}
                     {% if first_location %}
-                    <strong>{{ first_location.location }}</strong> is the primary hotspot for lost items on campus. 
+                    <strong>{{ first_location.location__name|title }}</strong> is the primary hotspot for lost items on campus. 
                     This location may have high foot traffic, limited supervision, or environmental factors that 
                     contribute to item loss. Consider implementing additional security measures, better signage, 
                     or staff supervision in this area.

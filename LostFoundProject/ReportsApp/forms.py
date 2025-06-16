@@ -1,24 +1,9 @@
 from django import forms
-from .models import ItemReport
+from .models import ItemReport, Category, Location
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Row, Column, Submit
 
-CAMPUS_LOCATIONS = [
-    ("library", "Library"),
-    ("cafeteria", "Cafeteria"),
-    ("classroom", "Classroom"),
-    ("dormitory", "Dormitory"),
-    ("other", "Other"),
-]
-
 class LostItemReportForm(forms.ModelForm):
-    location = forms.ChoiceField(
-        choices=CAMPUS_LOCATIONS,
-        widget=forms.Select(attrs={
-            'class': 'block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500',
-        })
-    )
-    
     class Meta:
         model = ItemReport
         fields = ['title', 'description', 'category', 'location', 'date_lost_or_found', 'image']
@@ -33,6 +18,9 @@ class LostItemReportForm(forms.ModelForm):
                 'rows': 4,
             }),
             'category': forms.Select(attrs={
+                'class': 'block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500',
+            }),
+            'location': forms.Select(attrs={
                 'class': 'block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500',
             }),
             'date_lost_or_found': forms.DateInput(attrs={
@@ -72,13 +60,6 @@ class LostItemReportForm(forms.ModelForm):
         )
 
 class FoundItemReportForm(forms.ModelForm):
-    location = forms.ChoiceField(
-        choices=CAMPUS_LOCATIONS,
-        widget=forms.Select(attrs={
-            'class': 'block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500',
-        })
-    )
-    
     class Meta:
         model = ItemReport
         fields = ['title', 'description', 'category', 'location', 'date_lost_or_found', 'image']
@@ -93,6 +74,9 @@ class FoundItemReportForm(forms.ModelForm):
                 'rows': 4,
             }),
             'category': forms.Select(attrs={
+                'class': 'block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500',
+            }),
+            'location': forms.Select(attrs={
                 'class': 'block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500',
             }),
             'date_lost_or_found': forms.DateInput(attrs={

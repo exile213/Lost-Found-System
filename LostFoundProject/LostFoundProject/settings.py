@@ -117,6 +117,12 @@ AUTH_PASSWORD_VALIDATORS = [
 
 AUTH_USER_MODEL = 'AccountsApp.User'  # Set the custom User model
 
+# Authentication backends
+AUTHENTICATION_BACKENDS = [
+    'AccountsApp.backends.EmailBackend',
+    'django.contrib.auth.backends.ModelBackend',
+]
+
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.2/topics/i18n/

@@ -3,133 +3,152 @@
 {% block title %}Claim Item - Campus Lost and Found{% endblock %}
 
 {% block content %}
-<div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+<div class="max-w-4xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
     <!-- Header -->
     <div class="mb-8">
         <h1 class="text-3xl font-bold text-gray-900 mb-2">Claim Item</h1>
         <p class="text-gray-600">Submit a claim for a found item</p>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <!-- Item Details -->
-        <div class="md:col-span-2">
-            <div class="bg-white rounded-lg shadow-md">
-                <div class="px-6 py-4 border-b border-gray-200">
-                    <h2 class="text-lg font-semibold text-gray-900">Item Details</h2>
-                </div>
-                <div class="p-6">
-                    <div class="flex items-start space-x-6">
-                        <div class="flex-shrink-0">
-                            <img src="{{ item.image.url|default:'https://via.placeholder.com/150' }}" alt="{{ item.name }}" class="h-32 w-32 object-cover rounded-lg">
-                        </div>
-                        <div class="flex-1">
-                            <h3 class="text-lg font-medium text-gray-900">{{ item.name }}</h3>
-                            <p class="text-sm text-gray-500">Category: {{ item.category }}</p>
-                            <p class="text-sm text-gray-500">Location Found: {{ item.location }}</p>
-                            <p class="text-sm text-gray-500">Date Found: {{ item.date_found }}</p>
-                            <p class="mt-2 text-sm text-gray-600">{{ item.description }}</p>
-                        </div>
-                    </div>
-                </div>
+    {% if error %}
+    <!-- Error Message -->
+    <div class="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+        <div class="flex">
+            <div class="flex-shrink-0">
+                <i data-feather="alert-circle" class="h-5 w-5 text-red-400"></i>
             </div>
-
-            <!-- Claim Form -->
-            <div class="bg-white rounded-lg shadow-md mt-6">
-                <div class="px-6 py-4 border-b border-gray-200">
-                    <h2 class="text-lg font-semibold text-gray-900">Submit Claim</h2>
-                </div>
-                <div class="p-6">
-                    <form method="post" class="space-y-6">
-                        {% csrf_token %}
-                        <input type="hidden" name="item_id" value="{{ item.id }}">
-
-                        <div>
-                            <label for="claim_reason" class="block text-sm font-medium text-gray-700 mb-2">Why do you believe this item belongs to you?</label>
-                            <textarea id="claim_reason" name="claim_reason" rows="4" required
-                                class="block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                                placeholder="Please provide specific details about the item that prove it belongs to you..."></textarea>
-                        </div>
-
-                        <div>
-                            <label for="contact_email" class="block text-sm font-medium text-gray-700 mb-2">Contact Email</label>
-                            <input type="email" id="contact_email" name="contact_email" value="{{ user.email }}" required
-                                class="block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
-                        </div>
-
-                        <div>
-                            <label for="contact_phone" class="block text-sm font-medium text-gray-700 mb-2">Contact Phone</label>
-                            <input type="tel" id="contact_phone" name="contact_phone" value="{{ user.phone }}"
-                                class="block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                                placeholder="(123) 456-7890">
-                        </div>
-
-                        <div class="flex items-start">
-                            <div class="flex items-center h-5">
-                                <input id="terms" name="terms" type="checkbox" required
-                                    class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
-                            </div>
-                            <div class="ml-3 text-sm">
-                                <label for="terms" class="font-medium text-gray-700">I confirm that this item belongs to me</label>
-                                <p class="text-gray-500">By checking this box, you confirm that the information provided is accurate and that you are the rightful owner of this item.</p>
-                            </div>
-                        </div>
-
-                        <div class="flex justify-end">
-                            <button type="submit" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                                <i data-feather="send" class="h-4 w-4 mr-2"></i>
-                                Submit Claim
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-
-        <!-- Sidebar -->
-        <div class="space-y-6">
-            <!-- Claim Guidelines -->
-            <div class="bg-white rounded-lg shadow-md">
-                <div class="px-6 py-4 border-b border-gray-200">
-                    <h2 class="text-lg font-semibold text-gray-900">Claim Guidelines</h2>
-                </div>
-                <div class="p-6">
-                    <div class="space-y-4">
-                        <div class="flex items-start">
-                            <div class="flex-shrink-0">
-                                <i data-feather="check-circle" class="h-5 w-5 text-green-500"></i>
-                            </div>
-                            <p class="ml-3 text-sm text-gray-600">Provide specific details about the item that prove it belongs to you.</p>
-                        </div>
-                        <div class="flex items-start">
-                            <div class="flex-shrink-0">
-                                <i data-feather="check-circle" class="h-5 w-5 text-green-500"></i>
-                            </div>
-                            <p class="ml-3 text-sm text-gray-600">Include any unique identifiers or distinguishing features.</p>
-                        </div>
-                        <div class="flex items-start">
-                            <div class="flex-shrink-0">
-                                <i data-feather="check-circle" class="h-5 w-5 text-green-500"></i>
-                            </div>
-                            <p class="ml-3 text-sm text-gray-600">Be prepared to provide additional verification if requested.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Need Help? -->
-            <div class="bg-white rounded-lg shadow-md">
-                <div class="px-6 py-4 border-b border-gray-200">
-                    <h2 class="text-lg font-semibold text-gray-900">Need Help?</h2>
-                </div>
-                <div class="p-6">
-                    <p class="text-sm text-gray-600 mb-4">If you need assistance with your claim or have questions about the process, please contact our support team.</p>
-                    <a href="{% url 'user_guide' %}" class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 w-full justify-center">
-                        <i data-feather="help-circle" class="h-4 w-4 mr-2"></i>
-                        View User Guide
-                    </a>
+            <div class="ml-3">
+                <h3 class="text-sm font-medium text-red-800">Unable to claim item</h3>
+                <div class="mt-2 text-sm text-red-700">
+                    <p>{{ error }}</p>
                 </div>
             </div>
         </div>
     </div>
+    {% else %}
+    <!-- Item Details -->
+    <div class="bg-white rounded-lg shadow-md overflow-hidden mb-8">
+        <div class="px-6 py-4 border-b border-gray-200">
+            <h2 class="text-lg font-semibold text-gray-900">Item Details</h2>
+        </div>
+        <div class="p-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <h3 class="text-lg font-medium text-gray-900 mb-4">{{ item.title }}</h3>
+                    <div class="space-y-3">
+                        <p class="text-sm text-gray-600"><strong>Category:</strong> {{ item.category.name|title }}</p>
+                        <p class="text-sm text-gray-600"><strong>Location:</strong> {{ item.location.name|title }}</p>
+                        <p class="text-sm text-gray-600"><strong>Date Found:</strong> {{ item.date_lost_or_found|date:"M d, Y" }}</p>
+                        <p class="text-sm text-gray-600"><strong>Reported by:</strong> {{ item.reporter.username }}</p>
+                    </div>
+                </div>
+                {% if item.image %}
+                <div>
+                    <img src="{{ item.image.url }}" alt="{{ item.title }}" class="w-full h-48 object-cover rounded-lg">
+                </div>
+                {% endif %}
+            </div>
+            {% if item.description %}
+            <div class="mt-6">
+                <h4 class="text-sm font-medium text-gray-900 mb-2">Description</h4>
+                <p class="text-sm text-gray-600">{{ item.description }}</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Claim Form -->
+    <div class="bg-white rounded-lg shadow-md overflow-hidden">
+        <div class="px-6 py-4 border-b border-gray-200">
+            <h2 class="text-lg font-semibold text-gray-900">Submit Your Claim</h2>
+        </div>
+        <div class="p-6">
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="space-y-6">
+                    <div>
+                        <label for="{{ form.claimer_name.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                            Your Full Name
+                        </label>
+                        {{ form.claimer_name }}
+                        {% if form.claimer_name.errors %}
+                        <p class="mt-1 text-sm text-red-600">{{ form.claimer_name.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+
+                    <div>
+                        <label for="{{ form.claimer_email.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                            Your Email
+                        </label>
+                        {{ form.claimer_email }}
+                        {% if form.claimer_email.errors %}
+                        <p class="mt-1 text-sm text-red-600">{{ form.claimer_email.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+
+                    <div>
+                        <label for="{{ form.claimer_phone.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                            Your Phone Number
+                        </label>
+                        {{ form.claimer_phone }}
+                        {% if form.claimer_phone.errors %}
+                        <p class="mt-1 text-sm text-red-600">{{ form.claimer_phone.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+
+                    <div>
+                        <label for="{{ form.claim_reason.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                            Why do you believe this item belongs to you?
+                        </label>
+                        {{ form.claim_reason }}
+                        {% if form.claim_reason.errors %}
+                        <p class="mt-1 text-sm text-red-600">{{ form.claim_reason.errors.0 }}</p>
+                        {% endif %}
+                        <p class="mt-1 text-sm text-gray-500">Please provide specific details about the item to help us verify your claim.</p>
+                    </div>
+
+                    <div>
+                        <label for="{{ form.proof_of_ownership.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                            Proof of Ownership (Optional)
+                        </label>
+                        {{ form.proof_of_ownership }}
+                        {% if form.proof_of_ownership.errors %}
+                        <p class="mt-1 text-sm text-red-600">{{ form.proof_of_ownership.errors.0 }}</p>
+                        {% endif %}
+                        <p class="mt-1 text-sm text-gray-500">Upload any documents, photos, or other evidence that proves this item belongs to you.</p>
+                    </div>
+
+                    <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                        <div class="flex">
+                            <div class="flex-shrink-0">
+                                <i data-feather="info" class="h-5 w-5 text-yellow-400"></i>
+                            </div>
+                            <div class="ml-3">
+                                <h3 class="text-sm font-medium text-yellow-800">Important Information</h3>
+                                <div class="mt-2 text-sm text-yellow-700">
+                                    <ul class="list-disc list-inside space-y-1">
+                                        <li>Your claim will be reviewed by campus staff</li>
+                                        <li>You may be asked to provide additional verification</li>
+                                        <li>False claims may result in disciplinary action</li>
+                                        <li>You will be notified via email about the status of your claim</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-end space-x-3">
+                        <a href="{% url 'search' %}" class="px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                            Cancel
+                        </a>
+                        <button type="submit" class="px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                            Submit Claim
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    {% endif %}
 </div>
 {% endblock %}

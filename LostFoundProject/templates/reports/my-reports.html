@@ -49,7 +49,7 @@
                                 </div>
                                 <div>
                                     <h3 class="text-lg font-semibold text-gray-900">{{ report.title }}</h3>
-                                    <p class="text-sm text-gray-600">{{ report.get_category_display }} • {{ report.get_location_display }}</p>
+                                    <p class="text-sm text-gray-600">{{ report.category.name|title }} • {{ report.location.name|title }}</p>
                                     <p class="text-xs text-gray-500 mt-1">Lost on {{ report.date_lost_or_found }}</p>
                                 </div>
                             </div>
@@ -97,7 +97,7 @@
                                 </div>
                                 <div>
                                     <h3 class="text-lg font-semibold text-gray-900">{{ report.title }}</h3>
-                                    <p class="text-sm text-gray-600">{{ report.get_category_display }} • {{ report.get_location_display }}</p>
+                                    <p class="text-sm text-gray-600">{{ report.category.name|title }} • {{ report.location.name|title }}</p>
                                     <p class="text-xs text-gray-500 mt-1">Found on {{ report.date_lost_or_found }}</p>
                                 </div>
                             </div>

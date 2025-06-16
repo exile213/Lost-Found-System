@@ -5,7 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import UserChangeForm, PasswordChangeForm
 from django.contrib.auth import update_session_auth_hash
-from ReportsApp.models import ItemReport
+from ReportsApp.models import ItemReport, Category
 from ClaimsApp.models import ClaimRequest
 from django.http import JsonResponse, HttpResponseForbidden
 import json
@@ -201,13 +201,17 @@ def staff_dashboard(request):
     # Get pending claims
     pending_claims = ClaimRequest.objects.filter(is_verified=False)
     
+    # Get recent reports for the dashboard
+    recent_reports = ItemReport.objects.all().order_by('-timestamp_reported')[:5]
+    
     # Get additional stats
     approved_claims_count = ClaimRequest.objects.filter(is_verified=True, verified_by__isnull=False).count()
     rejected_claims_count = ClaimRequest.objects.filter(is_verified=True, verified_by__isnull=True).count()
     total_users_count = User.objects.count()
     
     return render(request, 'accounts/staff_dashboard.html', {
-        'pending_claims': pending_claims,
+        'pending_claims_list': pending_claims,
+        'recent_reports': recent_reports,
         'approved_claims_count': approved_claims_count,
         'rejected_claims_count': rejected_claims_count,
         'total_users_count': total_users_count,
@@ -221,7 +225,7 @@ def staff_reports(request):
     
     # Get search parameters
     search_query = request.GET.get('search', '')
-    category = request.GET.get('category', '')
+    category_id = request.GET.get('category', '')
     status = request.GET.get('status', '')
     date_filter = request.GET.get('date_filter', '')
     
@@ -233,12 +237,13 @@ def staff_reports(request):
         reports = reports.filter(
             Q(title__icontains=search_query) |
             Q(description__icontains=search_query) |
-            Q(location__icontains=search_query) |
+            Q(location__name__icontains=search_query) |
+            Q(category__name__icontains=search_query) |
             Q(reporter__username__icontains=search_query)
         )
     
-    if category:
-        reports = reports.filter(category=category)
+    if category_id:
+        reports = reports.filter(category_id=category_id)
     
     if status:
         reports = reports.filter(status=status)
@@ -256,7 +261,7 @@ def staff_reports(request):
             reports = reports.filter(date_lost_or_found__gte=month_ago)
     
     # Get unique categories for filter dropdown
-    categories = ItemReport.objects.values_list('category', flat=True).distinct()
+    categories = Category.objects.all().order_by('name')
     
     # Get counts for each status
     total_reports = reports.count()
@@ -267,7 +272,7 @@ def staff_reports(request):
     context = {
         'reports': reports,
         'search_query': search_query,
-        'category': category,
+        'category': category_id,
         'status': status,
         'date_filter': date_filter,
         'categories': categories,
