@@ -4,7 +4,7 @@ from django.http import HttpResponseForbidden, JsonResponse
 from django.contrib.auth import get_user_model
 from ReportsApp.models import ItemReport, Category, Location
 from ClaimsApp.models import ClaimRequest
-from django.db.models import Count, Q, Avg, F
+from django.db.models import Count, Q, Avg, F, ExpressionWrapper, FloatField, IntegerField
 from django.utils import timezone
 from datetime import timedelta, datetime
 import json
@@ -27,7 +27,7 @@ def descriptive_analytics_view(request):
     User = get_user_model()
     
     # Get filter parameters
-    date_from = request.GET.get('date_from', '')
+    date_from = request.GET.get('date_from', '2021-06-01')  # Default to June 2021
     date_to = request.GET.get('date_to', '')
     category_filter = request.GET.get('category', '')
     
@@ -63,25 +63,61 @@ def descriptive_analytics_view(request):
         count=Count('id')
     ).order_by('-count')[:10]
     
-    # 3. Lost items reported per month (last 12 months)
+    # 3. Lost items reported per month (based on date_lost_or_found)
     monthly_analytics = []
-    for i in range(12):
-        month_start = timezone.now().replace(day=1) - timedelta(days=30*i)
-        month_end = month_start.replace(day=28) + timedelta(days=4)
-        month_end = month_end.replace(day=1) - timedelta(days=1)
+    yearly_analytics = {}  # New dictionary for yearly data
+    
+    # Get the date range for analytics
+    if date_from:
+        start_date = datetime.strptime(date_from, '%Y-%m-%d').date()
+    else:
+        start_date = datetime(2021, 6, 1).date()  # Default to June 2021
+    
+    end_date = datetime.strptime(date_to, '%Y-%m-%d').date() if date_to else timezone.now().date()
+    
+    # Generate monthly data points and collect yearly data
+    current_date = start_date
+    while current_date <= end_date:
+        month_start = current_date.replace(day=1)
+        if current_date.month == 12:
+            month_end = current_date.replace(year=current_date.year + 1, month=1, day=1) - timedelta(days=1)
+        else:
+            month_end = current_date.replace(month=current_date.month + 1, day=1) - timedelta(days=1)
         
         month_reports = base_queryset.filter(
-            timestamp_reported__gte=month_start,
-            timestamp_reported__lte=month_end
+            date_lost_or_found__gte=month_start,
+            date_lost_or_found__lte=month_end
         ).count()
         
+        # Add to monthly analytics
         monthly_analytics.append({
             'month': month_start.strftime('%B %Y'),
             'count': month_reports,
             'short_month': month_start.strftime('%b %Y')
         })
+        
+        # Add to yearly analytics
+        year = month_start.year
+        if year not in yearly_analytics:
+            yearly_analytics[year] = {
+                'total': 0,
+                'months': 0
+            }
+        yearly_analytics[year]['total'] += month_reports
+        yearly_analytics[year]['months'] += 1
+        
+        # Move to next month
+        if current_date.month == 12:
+            current_date = current_date.replace(year=current_date.year + 1, month=1)
+        else:
+            current_date = current_date.replace(month=current_date.month + 1)
     
-    monthly_analytics.reverse()  # Show oldest to newest
+    # Calculate average monthly reports for each year
+    for year_data in yearly_analytics.values():
+        year_data['avg_monthly'] = year_data['total'] / year_data['months'] if year_data['months'] > 0 else 0
+        del year_data['months']  # Remove the months count as it's no longer needed
+    
+    yearly_analytics = dict(sorted(yearly_analytics.items()))  # Sort years chronologically
     
     # Prepare data for Chart.js
     chart_data = {
@@ -102,30 +138,124 @@ def descriptive_analytics_view(request):
     # Get filter options
     all_categories = Category.objects.all().order_by('name')
     
+    # Generate insights based on the data
+    insights = []
+    
+    # Insight 1: Most common lost item category
+    if category_analytics:
+        top_category = category_analytics[0]
+        top_percentage = (top_category['count'] / base_queryset.count()) * 100 if base_queryset.count() > 0 else 0
+        insights.append({
+            'type': 'warning',
+            'title': 'Most Common Lost Item',
+            'message': f"{top_category['category__name']} items are lost most frequently ({top_category['count']} times, {top_percentage:.1f}% of all reports).",
+            'action': 'Focus awareness campaigns and tracking systems on this category',
+            'icon': 'alert-triangle',
+            'tab': 'categories'
+        })
+    
+    # Insight 2: High-risk location
+    if location_analytics:
+        riskiest_location = location_analytics[0]
+        location_percentage = (riskiest_location['count'] / base_queryset.count()) * 100 if base_queryset.count() > 0 else 0
+        if riskiest_location['count'] > 5:  # Only show if significant number of items
+            insights.append({
+                'type': 'alert',
+                'title': 'High-Risk Location',
+                'message': f"{riskiest_location['location__name']} has {riskiest_location['count']} lost items ({location_percentage:.1f}% of all reports).",
+                'action': 'Implement location-specific awareness and security measures',
+                'icon': 'map-pin',
+                'tab': 'locations'
+            })
+    
+    # Insight 3: Seasonal trend
+    if monthly_analytics:
+        max_month = max(monthly_analytics, key=lambda x: x['count'])
+        min_month = min(monthly_analytics, key=lambda x: x['count'])
+        if max_month['count'] > min_month['count'] * 1.5:  # 50% more activity
+            peak_percentage = (max_month['count'] / base_queryset.count()) * 100 if base_queryset.count() > 0 else 0
+            insights.append({
+                'type': 'info',
+                'title': 'Seasonal Pattern Detected',
+                'message': f"Peak activity in {max_month['month']} with {max_month['count']} items ({peak_percentage:.1f}%) vs {min_month['count']} in {min_month['month']}.",
+                'action': 'Prepare targeted campaigns for high-risk periods',
+                'icon': 'trending-up',
+                'tab': 'monthly'
+            })
+    
+    # Insight 4: Overall statistics insight
+    total_reports = base_queryset.count()
+    total_lost = base_queryset.filter(status='lost').count()
+    total_found = base_queryset.filter(status='found').count()
+    total_claimed = base_queryset.filter(status='claimed').count()
+    if total_lost > total_found:
+        lost_percentage = (total_lost / total_reports) * 100 if total_reports > 0 else 0
+        insights.append({
+            'type': 'warning',
+            'title': 'Lost vs Found Imbalance',
+            'message': f"More items are being lost ({total_lost}, {lost_percentage:.1f}%) than found ({total_found}).",
+            'action': 'Strengthen recovery and awareness programs',
+            'icon': 'scale'
+        })
+    else:
+        found_percentage = (total_found / total_reports) * 100 if total_reports > 0 else 0
+        insights.append({
+            'type': 'success',
+            'title': 'Good Recovery Rate',
+            'message': f"More items are being found ({total_found}, {found_percentage:.1f}%) than lost ({total_lost}).",
+            'action': 'Maintain current recovery efforts',
+            'icon': 'check-circle'
+        })
+    
+    # Insight 5: Category diversity
+    if len(category_analytics) > 5:
+        insights.append({
+            'type': 'info',
+            'title': 'High Category Diversity',
+            'message': f"Items are lost across {len(category_analytics)} different categories, indicating diverse campus activities.",
+            'action': 'Implement broad awareness campaigns covering multiple categories',
+            'icon': 'layers'
+        })
+    
+    # Insight 6: Location concentration
+    if location_analytics and len(location_analytics) <= 3:
+        insights.append({
+            'type': 'warning',
+            'title': 'Location Concentration',
+            'message': f"Lost items are concentrated in only {len(location_analytics)} locations, suggesting specific problem areas.",
+            'action': 'Focus resources on these high-risk locations',
+            'icon': 'target'
+        })
+
     context = {
         # Descriptive Analytics
         'category_analytics': category_analytics,
         'location_analytics': location_analytics,
         'monthly_analytics': monthly_analytics,
+        'yearly_analytics': yearly_analytics,  # Add yearly analytics to context
         
         # Chart Data
         'chart_data': json.dumps(chart_data),
         
         # Summary statistics
-        'total_reports': base_queryset.count(),
+        'total_reports': total_reports,
+        'total_lost': total_lost,
+        'total_found': total_found,
+        'total_claimed': total_claimed,
         
         # Filter options
         'all_categories': all_categories,
         'date_from': date_from,
         'date_to': date_to,
         'category_filter': category_filter,
+        'insights': insights,
     }
     
     return render(request, 'analytics/descriptive.html', context)
 
 @login_required
 def diagnostic_analytics_view(request):
-    """Diagnostic Analytics: Departments, Claim Success, Active Reporters, Low Claim Items"""
+    """Diagnostic Analytics: Claim Success, Active Reporters, Low Claim Items"""
     if not hasattr(request.user, 'role') or request.user.role != 'staff':
         return HttpResponseForbidden('You are not authorized to access analytics. Staff access only.')
     
@@ -135,7 +265,6 @@ def diagnostic_analytics_view(request):
     # Get filter parameters
     date_from = request.GET.get('date_from', '')
     date_to = request.GET.get('date_to', '')
-    department_filter = request.GET.get('department', '')
     
     # Base queryset with filters
     base_queryset = ItemReport.objects.all()
@@ -154,108 +283,88 @@ def diagnostic_analytics_view(request):
         except ValueError:
             pass
     
-    if department_filter:
-        base_queryset = base_queryset.filter(reporter__department=department_filter)
-    
     # ==================== DIAGNOSTIC ANALYTICS ====================
     
-    # 1. Departments with highest item loss counts
-    department_analytics = base_queryset.values(
-        'reporter__department'
-    ).annotate(
-        count=Count('id')
-    ).filter(
-        reporter__department__isnull=False
-    ).exclude(
-        reporter__department=''
-    ).order_by('-count')[:10]
-    
-    # 2. Items that are frequently reported but rarely claimed
+    # 1. Items that are frequently reported but rarely claimed
     item_claim_analytics = []
     items_with_claims = base_queryset.annotate(
         total_claims=Count('claimrequest'),
         successful_claims=Count('claimrequest', filter=Q(claimrequest__is_verified=True))
     ).filter(total_claims__gt=0)
     
-    for item in items_with_claims:
-        if item.total_claims > 0:
-            claim_rate = (item.successful_claims / item.total_claims) * 100
-            item_claim_analytics.append({
-                'item_title': item.title,
-                'category': item.category.name if item.category else 'Unknown',
-                'total_claims': item.total_claims,
-                'successful_claims': item.successful_claims,
-                'claim_rate': round(claim_rate, 1)
-            })
+    for item in items_with_claims[:10]:  # Top 10 items
+        success_rate = (item.successful_claims / item.total_claims) * 100 if item.total_claims > 0 else 0
+        item_claim_analytics.append({
+            'item': item,
+            'total_claims': item.total_claims,
+            'successful_claims': item.successful_claims,
+            'success_rate': round(success_rate, 1)
+        })
     
-    # Sort by claim rate (lowest first) and take top 10
-    item_claim_analytics.sort(key=lambda x: x['claim_rate'])
-    item_claim_analytics = item_claim_analytics[:10]
-    
-    # 3. Most active item reporters
+    # 2. Most active reporters (users who report the most items)
     active_reporters = base_queryset.values(
         'reporter__username',
-        'reporter__department'
+        'reporter__first_name',
+        'reporter__last_name'
     ).annotate(
         report_count=Count('id')
     ).order_by('-report_count')[:10]
     
-    # 4. Success rate by category
-    category_success_rates = []
-    for category in Category.objects.all():
-        category_items = base_queryset.filter(category=category)
-        total_items = category_items.count()
-        claimed_items = category_items.filter(status='claimed').count()
-        
-        if total_items > 0:
-            success_rate = (claimed_items / total_items) * 100
-            category_success_rates.append({
-                'category': category.name,
-                'total_items': total_items,
-                'claimed_items': claimed_items,
-                'success_rate': round(success_rate, 1)
-            })
-    
-    category_success_rates.sort(key=lambda x: x['success_rate'], reverse=True)
-    
-    # Prepare data for Chart.js
+    # Prepare chart data
     chart_data = {
-        'departments': {
-            'labels': [item['reporter__department'] for item in department_analytics],
-            'data': [item['count'] for item in department_analytics]
-        },
-        'category_success': {
-            'labels': [item['category'] for item in category_success_rates],
-            'data': [item['success_rate'] for item in category_success_rates]
+        'active_reporters': {
+            'labels': [reporter['reporter__username'] for reporter in active_reporters],
+            'data': [reporter['report_count'] for reporter in active_reporters]
         }
     }
     
-    # Get filter options
-    all_departments = User.objects.values_list('department', flat=True).filter(
-        department__isnull=False
-    ).exclude(department='').distinct()
+    # Calculate total reports for insights
+    total_reports = base_queryset.count()
     
+    # Generate insights based on the data
+    insights = []
+    
+    # Insight 1: Most frequent reporter
+    if active_reporters:
+        top_reporter = active_reporters[0]
+        if top_reporter['report_count'] >= 3:
+            reporter_percentage = (top_reporter['report_count'] / total_reports) * 100 if total_reports > 0 else 0
+            insights.append({
+                'type': 'warning',
+                'title': 'Frequent Reporter',
+                'message': f"{top_reporter['reporter__username']} has reported {top_reporter['report_count']} items ({reporter_percentage:.1f}% of all reports).",
+                'action': 'Consider providing organizational support or training',
+                'icon': 'user',
+                'tab': 'reporters'
+            })
+    
+    # Insight 2: Reporter behavior patterns
+    if len(active_reporters) >= 3:
+        insights.append({
+            'type': 'info',
+            'title': 'Multiple Frequent Reporters',
+            'message': f"Found {len(active_reporters)} users with multiple reports, indicating potential patterns in campus behavior.",
+            'action': 'Analyze common factors among frequent reporters',
+            'icon': 'users'
+        })
+
     context = {
         # Diagnostic Analytics
-        'department_analytics': department_analytics,
         'item_claim_analytics': item_claim_analytics,
         'active_reporters': active_reporters,
-        'category_success_rates': category_success_rates,
         
         # Chart Data
         'chart_data': json.dumps(chart_data),
         
         # Summary statistics
-        'total_reports': base_queryset.count(),
+        'total_reports': total_reports,
         'total_claims': ClaimRequest.objects.count(),
         'successful_claims': ClaimRequest.objects.filter(is_verified=True).count(),
-        'pending_claims': ClaimRequest.objects.filter(is_verified=False).count(),
         
         # Filter options
-        'all_departments': all_departments,
         'date_from': date_from,
         'date_to': date_to,
-        'department_filter': department_filter,
+        'insights': insights,
     }
     
     return render(request, 'analytics/diagnostic.html', context)

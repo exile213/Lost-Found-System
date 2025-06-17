@@ -77,11 +77,6 @@ class Command(BaseCommand):
     def create_users(self, num_users):
         """Create fake users with realistic data"""
         users = []
-        departments = [
-            'Computer Science', 'Engineering', 'Business Administration',
-            'Arts and Humanities', 'Sciences', 'Education', 'Medicine',
-            'Law', 'Social Sciences', 'Agriculture'
-        ]
         
         # Create staff users (20% of total)
         num_staff = int(num_users * 0.2)
@@ -96,7 +91,6 @@ class Command(BaseCommand):
                 first_name=fake.first_name(),
                 last_name=fake.last_name(),
                 phone_number=fake.phone_number(),
-                department=random.choice(departments),
                 role='staff',
                 is_staff=True,
                 date_joined=fake.date_time_between(
@@ -116,7 +110,6 @@ class Command(BaseCommand):
                 last_name=fake.last_name(),
                 phone_number=fake.phone_number(),
                 student_id=f'202{random.randint(0,4)}{random.randint(1000,9999)}',
-                department=random.choice(departments),
                 role='student',
                 date_joined=fake.date_time_between(
                     start_date='2020-01-01',

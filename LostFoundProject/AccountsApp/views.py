@@ -72,7 +72,6 @@ def register(request):
         last_name = request.POST.get('last_name')
         phone_number = request.POST.get('phone')
         student_id = request.POST.get('student_id')
-        department = request.POST.get('department')
         role = request.POST.get('role')
 
         # Basic validation
@@ -94,7 +93,6 @@ def register(request):
             last_name=last_name,
             phone_number=phone_number,
             student_id=student_id,
-            department=department,
             role=role
         )
         user.is_active = True
@@ -116,7 +114,6 @@ def edit_profile(request):
         user.last_name = request.POST.get('last_name', '')
         user.phone_number = request.POST.get('phone_number', '')
         user.student_id = request.POST.get('student_id', '')
-        user.department = request.POST.get('department', '')
         
         # Handle profile picture upload
         if 'profile_picture' in request.FILES:

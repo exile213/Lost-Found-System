@@ -5,6 +5,7 @@ from ClaimsApp.models import ClaimRequest
 from django.utils import timezone
 from datetime import timedelta
 from django.db.models import Q
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 def index(request):
     return render(request, 'index.html')
@@ -118,11 +119,24 @@ def search(request):
     categories = Category.objects.all().order_by('name')
     locations = Location.objects.all().order_by('name')
     
-    # Get counts for each status
+    # Get counts for each status (before pagination)
     total_items = items.count()
     lost_count = items.filter(status='lost').count()
     found_count = items.filter(status='found').count()
     claimed_count = items.filter(status='claimed').count()
+    
+    # Pagination
+    paginator = Paginator(items, 12)  # Show 12 items per page
+    page = request.GET.get('page')
+    
+    try:
+        items = paginator.page(page)
+    except PageNotAnInteger:
+        # If page is not an integer, deliver first page
+        items = paginator.page(1)
+    except EmptyPage:
+        # If page is out of range, deliver last page of results
+        items = paginator.page(paginator.num_pages)
     
     context = {
         'items': items,

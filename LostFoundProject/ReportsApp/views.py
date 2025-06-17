@@ -44,6 +44,11 @@ def report_detail(request, report_id):
     report = get_object_or_404(ItemReport, id=report_id, reporter=request.user)
     return render(request, 'reports/report-detail.html', {'report': report})
 
+def item_detail(request, report_id):
+    """Public view for viewing any item's details (for search/browsing)"""
+    report = get_object_or_404(ItemReport, id=report_id)
+    return render(request, 'reports/item-detail.html', {'report': report})
+
 @login_required
 def my_reports(request):
     all_reports = ItemReport.objects.filter(reporter=request.user).order_by('-timestamp_reported')

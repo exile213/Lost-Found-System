@@ -1,29 +1,17 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %}Descriptive Analytics - Campus Lost and Found{% endblock %}
 
 {% block extra_head %}
-<!-- Chart.js CDN - Multiple fallback options -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.js"></script>
-<script>
-// Fallback if the first CDN fails
-if (typeof Chart === 'undefined') {
-    document.write('<script src="https://unpkg.com/chart.js@4.4.0/dist/chart.umd.js"><\/script>');
-}
-</script>
+<!-- Add Chart.js from CDN -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <style>
     .chart-container {
         position: relative;
         height: 400px;
         width: 100%;
         margin-bottom: 20px;
-    }
-    .insight-card {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        border-radius: 12px;
-        padding: 20px;
-        margin-top: 20px;
     }
     .tab-content {
         display: none;
@@ -50,7 +38,7 @@ if (typeof Chart === 'undefined') {
             </div>
             <div class="flex items-center space-x-3">
                 <a href="{% url 'analytics:diagnostic' %}" 
-                   class="inline-flex items-center px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition duration-200">
+                   class="inline-flex items-center px-4 py-2 bg-gray-600 text-white text-sm font-medium rounded-lg hover:bg-gray-700 transition duration-200">
                     Diagnostic Analytics
                     <svg class="h-4 w-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
@@ -146,18 +134,31 @@ if (typeof Chart === 'undefined') {
                     </table>
                 </div>
             </div>
-            <div class="insight-card">
-                <p class="text-sm">
-                    <strong>Insight:</strong> 
-                    {% with first_category=category_analytics.first %}
-                    {% if first_category %}
-                    This chart suggests that <strong>{{ first_category.category__name|title }}</strong> items are lost most frequently, 
-                    which may be due to students using shared outlets and study areas. Consider implementing better tracking 
-                    systems and awareness campaigns for this category.
-                    {% endif %}
-                    {% endwith %}
-                </p>
-            </div>
+            
+            <!-- Styled Insights Section -->
+            {% for insight in insights %}
+                {% if insight.tab == 'categories' or not insight.tab %}
+                <div class="mt-4 p-4 rounded-lg border-l-4 
+                    {% if insight.type == 'warning' %}border-yellow-400 bg-yellow-50{% elif insight.type == 'alert' %}border-red-400 bg-red-50{% elif insight.type == 'info' %}border-blue-400 bg-blue-50{% elif insight.type == 'success' %}border-green-400 bg-green-50{% endif %}">
+                    <div class="flex items-start">
+                        <div class="flex-shrink-0">
+                            <div class="w-6 h-6 rounded-full flex items-center justify-center
+                                {% if insight.type == 'warning' %}bg-yellow-100 text-yellow-600{% elif insight.type == 'alert' %}bg-red-100 text-red-600{% elif insight.type == 'info' %}bg-blue-100 text-blue-600{% elif insight.type == 'success' %}bg-green-100 text-green-600{% endif %}">
+                                <i data-feather="{{ insight.icon }}" class="h-3 w-3"></i>
+                            </div>
+                        </div>
+                        <div class="ml-3 flex-1">
+                            <h4 class="text-sm font-semibold text-gray-900 mb-1">{{ insight.title }}</h4>
+                            <p class="text-sm text-gray-700 mb-2">{{ insight.message }}</p>
+                            <div class="bg-white rounded-md p-2 border border-gray-200">
+                                <p class="text-xs font-medium text-gray-700">Recommended Action:</p>
+                                <p class="text-xs text-gray-600">{{ insight.action }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+            {% endfor %}
         </div>
     </div>
 
@@ -192,19 +193,31 @@ if (typeof Chart === 'undefined') {
                     </table>
                 </div>
             </div>
-            <div class="insight-card">
-                <p class="text-sm">
-                    <strong>Insight:</strong> 
-                    {% with first_location=location_analytics.first %}
-                    {% if first_location %}
-                    <strong>{{ first_location.location__name|title }}</strong> is the primary hotspot for lost items on campus. 
-                    This location may have high foot traffic, limited supervision, or environmental factors that 
-                    contribute to item loss. Consider implementing additional security measures, better signage, 
-                    or staff supervision in this area.
-                    {% endif %}
-                    {% endwith %}
-                </p>
-            </div>
+            
+            <!-- Styled Insights Section -->
+            {% for insight in insights %}
+                {% if insight.tab == 'locations' or not insight.tab %}
+                <div class="mt-4 p-4 rounded-lg border-l-4 
+                    {% if insight.type == 'warning' %}border-yellow-400 bg-yellow-50{% elif insight.type == 'alert' %}border-red-400 bg-red-50{% elif insight.type == 'info' %}border-blue-400 bg-blue-50{% elif insight.type == 'success' %}border-green-400 bg-green-50{% endif %}">
+                    <div class="flex items-start">
+                        <div class="flex-shrink-0">
+                            <div class="w-6 h-6 rounded-full flex items-center justify-center
+                                {% if insight.type == 'warning' %}bg-yellow-100 text-yellow-600{% elif insight.type == 'alert' %}bg-red-100 text-red-600{% elif insight.type == 'info' %}bg-blue-100 text-blue-600{% elif insight.type == 'success' %}bg-green-100 text-green-600{% endif %}">
+                                <i data-feather="{{ insight.icon }}" class="h-3 w-3"></i>
+                            </div>
+                        </div>
+                        <div class="ml-3 flex-1">
+                            <h4 class="text-sm font-semibold text-gray-900 mb-1">{{ insight.title }}</h4>
+                            <p class="text-sm text-gray-700 mb-2">{{ insight.message }}</p>
+                            <div class="bg-white rounded-md p-2 border border-gray-200">
+                                <p class="text-xs font-medium text-gray-700">Recommended Action:</p>
+                                <p class="text-xs text-gray-600">{{ insight.action }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+            {% endfor %}
         </div>
     </div>
 
@@ -213,12 +226,21 @@ if (typeof Chart === 'undefined') {
         <div class="bg-white rounded-lg shadow-md p-6 mb-6">
             <h3 class="text-lg font-semibold text-gray-900 mb-4">Monthly Lost Item Reports</h3>
             <p class="text-gray-600 mb-4">Understand when losses spike (e.g., semester start, exams)</p>
-            <div class="chart-container">
+            <div class="chart-container" style="height: 400px;">
                 <canvas id="monthlyChart"></canvas>
             </div>
             <div class="bg-gray-50 rounded-lg p-4 mt-4">
-                <h4 class="text-md font-medium text-gray-900 mb-3">Summary Table</h4>
-                <div class="overflow-x-auto">
+                <div class="flex justify-between items-center mb-4">
+                    <h4 class="text-md font-medium text-gray-900">Summary Table</h4>
+                    <div class="flex items-center space-x-4">
+                        <label class="text-sm text-gray-600">View:</label>
+                        <select id="summaryViewToggle" class="px-3 py-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                            <option value="monthly">Monthly</option>
+                            <option value="yearly">Yearly</option>
+                        </select>
+                    </div>
+                </div>
+                <div id="monthlySummary" class="overflow-x-auto">
                     <table class="min-w-full divide-y divide-gray-200">
                         <thead class="bg-gray-100">
                             <tr>
@@ -238,20 +260,54 @@ if (typeof Chart === 'undefined') {
                         </tbody>
                     </table>
                 </div>
+                <div id="yearlySummary" class="overflow-x-auto hidden">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-100">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Year</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total Reports</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Percentage</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Avg. Monthly</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            {% for year, data in yearly_analytics.items %}
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ year }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ data.total }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{% widthratio data.total total_reports 100 %}%</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ data.avg_monthly|floatformat:1 }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
             </div>
-            <div class="insight-card">
-                <p class="text-sm">
-                    <strong>Insight:</strong> 
-                    {% with peak_month=monthly_analytics.first %}
-                    {% if peak_month %}
-                    <strong>{{ peak_month.month }}</strong> shows the highest number of lost item reports, which likely 
-                    correlates with academic calendar events such as semester start, exam periods, or campus activities. 
-                    This pattern suggests the need for targeted awareness campaigns and additional support during these 
-                    high-risk periods.
-                    {% endif %}
-                    {% endwith %}
-                </p>
-            </div>
+            
+            <!-- Styled Insights Section -->
+            {% for insight in insights %}
+                {% if insight.tab == 'monthly' or not insight.tab %}
+                <div class="mt-4 p-4 rounded-lg border-l-4 
+                    {% if insight.type == 'warning' %}border-yellow-400 bg-yellow-50{% elif insight.type == 'alert' %}border-red-400 bg-red-50{% elif insight.type == 'info' %}border-blue-400 bg-blue-50{% elif insight.type == 'success' %}border-green-400 bg-green-50{% endif %}">
+                    <div class="flex items-start">
+                        <div class="flex-shrink-0">
+                            <div class="w-6 h-6 rounded-full flex items-center justify-center
+                                {% if insight.type == 'warning' %}bg-yellow-100 text-yellow-600{% elif insight.type == 'alert' %}bg-red-100 text-red-600{% elif insight.type == 'info' %}bg-blue-100 text-blue-600{% elif insight.type == 'success' %}bg-green-100 text-green-600{% endif %}">
+                                <i data-feather="{{ insight.icon }}" class="h-3 w-3"></i>
+                            </div>
+                        </div>
+                        <div class="ml-3 flex-1">
+                            <h4 class="text-sm font-semibold text-gray-900 mb-1">{{ insight.title }}</h4>
+                            <p class="text-sm text-gray-700 mb-2">{{ insight.message }}</p>
+                            <div class="bg-white rounded-md p-2 border border-gray-200">
+                                <p class="text-xs font-medium text-gray-700">Recommended Action:</p>
+                                <p class="text-xs text-gray-600">{{ insight.action }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+            {% endfor %}
         </div>
     </div>
 </div>
@@ -259,107 +315,126 @@ if (typeof Chart === 'undefined') {
 <script>
 // Global chart instances to prevent memory leaks
 let chartInstances = {};
+let chartInitialized = false;
 
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('Descriptive Analytics - DOM Content Loaded');
-    
-    // Try to load Chart.js with multiple strategies
-    loadChartJS().then(() => {
-        console.log('Chart.js loaded successfully');
-        initializeTabs();
-        initializeActiveTab();
-    }).catch(error => {
-        console.error('Failed to load Chart.js:', error);
-        showChartError();
-    });
-});
+// Function to check if Chart.js is loaded
+function isChartJSLoaded() {
+    return typeof Chart !== 'undefined';
+}
 
+// Function to load Chart.js if not already loaded
 function loadChartJS() {
     return new Promise((resolve, reject) => {
-        let attempts = 0;
-        const maxAttempts = 100; // 10 seconds max wait
+        if (isChartJSLoaded()) {
+            resolve();
+            return;
+        }
+
+        const script = document.createElement('script');
+        script.src = 'https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js';
+        script.async = true;
         
-        const checkChartJS = () => {
-            attempts++;
-            if (typeof Chart !== 'undefined') {
+        script.onload = () => {
+            if (isChartJSLoaded()) {
                 resolve();
-            } else if (attempts >= maxAttempts) {
-                // Try loading from a different CDN as last resort
-                const script = document.createElement('script');
-                script.src = 'https://unpkg.com/chart.js@4.4.0/dist/chart.umd.js';
-                script.onload = () => {
-                    if (typeof Chart !== 'undefined') {
-                        resolve();
-                    } else {
-                        reject(new Error('Chart.js failed to load from all sources'));
-                    }
-                };
-                script.onerror = () => reject(new Error('Chart.js failed to load from all sources'));
-                document.head.appendChild(script);
             } else {
-                setTimeout(checkChartJS, 100);
+                reject(new Error('Chart.js failed to load'));
             }
         };
         
-        checkChartJS();
+        script.onerror = () => reject(new Error('Failed to load Chart.js'));
+        document.head.appendChild(script);
     });
 }
 
-function showChartError() {
-    const chartContainers = document.querySelectorAll('.chart-container');
-    chartContainers.forEach(container => {
-        container.innerHTML = `
-            <div class="flex items-center justify-center h-full bg-gray-100 rounded-lg">
-                <div class="text-center">
-                    <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
-                    </svg>
-                    <p class="mt-2 text-sm text-gray-500">Chart loading failed</p>
-                </div>
-            </div>
-        `;
-    });
-}
+// Initialize charts when DOM is loaded
+document.addEventListener('DOMContentLoaded', async function() {
+    try {
+        // Ensure Chart.js is loaded
+        await loadChartJS();
+        chartInitialized = true;
+        console.log('Chart.js loaded successfully');
 
-function initializeTabs() {
-    console.log('Initializing tabs...');
-    const tabs = document.querySelectorAll('.nav-tab');
-    const contents = document.querySelectorAll('.tab-content');
-    
-    tabs.forEach(tab => {
-        tab.addEventListener('click', function() {
-            const targetTab = this.getAttribute('data-tab');
-            console.log('Tab clicked:', targetTab);
-            
-            // Remove active class from all tabs and contents
-            tabs.forEach(t => t.classList.remove('active'));
-            contents.forEach(c => c.classList.remove('active'));
-            
-            // Add active class to clicked tab and corresponding content
-            this.classList.add('active');
-            const targetContent = document.getElementById(targetTab);
-            if (targetContent) {
-                targetContent.classList.add('active');
-                console.log('Activated content:', targetTab);
+        // Initialize tabs
+        const tabs = document.querySelectorAll('.nav-tab');
+        const tabContents = document.querySelectorAll('.tab-content');
+        
+        tabs.forEach(tab => {
+            tab.addEventListener('click', function() {
+                // Remove active class from all tabs and contents
+                tabs.forEach(t => t.classList.remove('active'));
+                tabContents.forEach(c => c.classList.remove('active'));
                 
-                // Initialize chart for the newly active tab
-                setTimeout(() => {
-                    initializeChartForTab(targetTab);
-                }, 100);
-            }
+                // Add active class to clicked tab and content
+                this.classList.add('active');
+                const tabId = this.getAttribute('data-tab');
+                const targetContent = document.getElementById(tabId);
+                if (targetContent) {
+                    targetContent.classList.add('active');
+                    if (chartInitialized) {
+                        initializeChartForTab(tabId);
+                    }
+                }
+            });
         });
-    });
-}
 
-function initializeActiveTab() {
-    const activeTab = document.querySelector('.nav-tab.active');
-    if (activeTab) {
-        const activeTabId = activeTab.getAttribute('data-tab');
-        initializeChartForTab(activeTabId);
+        // Initialize summary view toggle
+        const summaryViewToggle = document.getElementById('summaryViewToggle');
+        const monthlySummary = document.getElementById('monthlySummary');
+        const yearlySummary = document.getElementById('yearlySummary');
+
+        if (summaryViewToggle) {
+            // Set initial state
+            if (summaryViewToggle.value === 'yearly') {
+                monthlySummary.classList.add('hidden');
+                yearlySummary.classList.remove('hidden');
+            } else {
+                monthlySummary.classList.remove('hidden');
+                yearlySummary.classList.add('hidden');
+            }
+
+            // Add change event listener
+            summaryViewToggle.addEventListener('change', function() {
+                console.log('View toggle changed to:', this.value);
+                if (this.value === 'yearly') {
+                    monthlySummary.classList.add('hidden');
+                    yearlySummary.classList.remove('hidden');
+                } else {
+                    monthlySummary.classList.remove('hidden');
+                    yearlySummary.classList.add('hidden');
+                }
+            });
+        }
+
+        // Initialize the active tab's chart
+        const activeTab = document.querySelector('.nav-tab.active');
+        if (activeTab && chartInitialized) {
+            initializeChartForTab(activeTab.getAttribute('data-tab'));
+        }
+    } catch (error) {
+        console.error('Error initializing charts:', error);
+        // Show error message in chart containers
+        document.querySelectorAll('.chart-container').forEach(container => {
+            container.innerHTML = `
+                <div class="flex items-center justify-center h-full bg-gray-100 rounded-lg">
+                    <div class="text-center p-4">
+                        <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                        </svg>
+                        <p class="mt-2 text-sm text-gray-500">Failed to load charts. Please refresh the page.</p>
+                    </div>
+                </div>
+            `;
+        });
     }
-}
+});
 
 function initializeChartForTab(tabId) {
+    if (!chartInitialized || !isChartJSLoaded()) {
+        console.error('Chart.js not initialized');
+        return;
+    }
+
     console.log('Initializing chart for tab:', tabId);
     
     // Destroy existing chart for this tab
@@ -510,6 +585,15 @@ function initializeChartForTab(tabId) {
 </script>
 
 <style>
+/* Add these styles to ensure proper visibility of tables */
+#monthlySummary, #yearlySummary {
+    display: block;
+}
+
+#monthlySummary.hidden, #yearlySummary.hidden {
+    display: none;
+}
+
 /* Enhanced tab styling with regular CSS */
 .nav-tab {
     padding: 0.75rem 1.5rem;

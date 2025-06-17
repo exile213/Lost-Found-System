@@ -76,12 +76,6 @@
                     <div class="mt-1 p-3 bg-gray-50 rounded-md border">{{ user.student_id }}</div>
                 </div>
                 {% endif %}
-                {% if user.department %}
-                <div>
-                    <label class="block text-sm font-medium text-gray-700">Department</label>
-                    <div class="mt-1 p-3 bg-gray-50 rounded-md border">{{ user.department }}</div>
-                </div>
-                {% endif %}
                 <div>
                     <label class="block text-sm font-medium text-gray-700">Date Joined</label>
                     <div class="mt-1 p-3 bg-gray-50 rounded-md border">{{ user.date_joined|date:'F d, Y' }}</div>

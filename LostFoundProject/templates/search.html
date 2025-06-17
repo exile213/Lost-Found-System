@@ -128,7 +128,7 @@
                             </div>
                             
                             <div class="mt-4 flex gap-2">
-                                <a href="{% url 'reports:report_detail' item.id %}" class="flex-1 text-center px-3 py-2 bg-indigo-600 text-white text-sm font-medium rounded-md hover:bg-indigo-700 transition duration-200">
+                                <a href="{% url 'reports:item_detail' item.id %}" class="flex-1 text-center px-3 py-2 bg-indigo-600 text-white text-sm font-medium rounded-md hover:bg-indigo-700 transition duration-200">
                                     View Details
                                 </a>
                                 {% if item.status == 'found' and user.is_authenticated and user != item.reporter %}
@@ -140,6 +140,43 @@
                         </div>
                     {% endfor %}
                 </div>
+                
+                <!-- Pagination -->
+                {% if items.has_other_pages %}
+                    <div class="mt-8 flex items-center justify-between">
+                        <div class="text-sm text-gray-700">
+                            Showing {{ items.start_index }} to {{ items.end_index }} of {{ total_items }} results
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            {% if items.has_previous %}
+                                <a href="?{% if search_query %}search={{ search_query }}&{% endif %}{% if selected_category %}category={{ selected_category }}&{% endif %}{% if selected_location %}location={{ selected_location }}&{% endif %}{% if selected_status %}status={{ selected_status }}&{% endif %}{% if selected_date_filter %}date_filter={{ selected_date_filter }}&{% endif %}page={{ items.previous_page_number }}" 
+                                   class="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50 hover:text-gray-700 transition duration-200">
+                                    Previous
+                                </a>
+                            {% endif %}
+                            
+                            {% for num in items.paginator.page_range %}
+                                {% if items.number == num %}
+                                    <span class="px-3 py-2 text-sm font-medium text-white bg-indigo-600 border border-indigo-600 rounded-md">
+                                        {{ num }}
+                                    </span>
+                                {% elif num > items.number|add:'-3' and num < items.number|add:'3' %}
+                                    <a href="?{% if search_query %}search={{ search_query }}&{% endif %}{% if selected_category %}category={{ selected_category }}&{% endif %}{% if selected_location %}location={{ selected_location }}&{% endif %}{% if selected_status %}status={{ selected_status }}&{% endif %}{% if selected_date_filter %}date_filter={{ selected_date_filter }}&{% endif %}page={{ num }}" 
+                                       class="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50 hover:text-gray-700 transition duration-200">
+                                        {{ num }}
+                                    </a>
+                                {% endif %}
+                            {% endfor %}
+                            
+                            {% if items.has_next %}
+                                <a href="?{% if search_query %}search={{ search_query }}&{% endif %}{% if selected_category %}category={{ selected_category }}&{% endif %}{% if selected_location %}location={{ selected_location }}&{% endif %}{% if selected_status %}status={{ selected_status }}&{% endif %}{% if selected_date_filter %}date_filter={{ selected_date_filter }}&{% endif %}page={{ items.next_page_number }}" 
+                                   class="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50 hover:text-gray-700 transition duration-200">
+                                    Next
+                                </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endif %}
             {% else %}
                 <div class="text-center py-12">
                     <i data-feather="search" class="h-16 w-16 text-gray-400 mx-auto mb-4"></i>

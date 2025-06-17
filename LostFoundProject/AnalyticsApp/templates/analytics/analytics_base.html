@@ -1,0 +1,19 @@
+    <!-- Navigation -->
+    <nav class="bg-white shadow-sm border-b border-gray-200 mb-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex space-x-8">
+                <a href="{% url 'analytics:descriptive' %}" 
+                   class="py-4 px-1 border-b-2 font-medium text-sm {% if request.resolver_match.url_name == 'descriptive' %}border-indigo-500 text-indigo-600{% else %}border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300{% endif %}">
+                    Descriptive Analytics
+                </a>
+                <a href="{% url 'analytics:diagnostic' %}" 
+                   class="py-4 px-1 border-b-2 font-medium text-sm {% if request.resolver_match.url_name == 'diagnostic' %}border-indigo-500 text-indigo-600{% else %}border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300{% endif %}">
+                    Diagnostic Analytics
+                </a>
+                <a href="{% url 'analytics:search' %}" 
+                   class="py-4 px-1 border-b-2 font-medium text-sm {% if request.resolver_match.url_name == 'search' %}border-indigo-500 text-indigo-600{% else %}border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300{% endif %}">
+                    Search & Filter
+                </a>
+            </div>
+        </div>
+    </nav> 

@@ -18,13 +18,6 @@ if (typeof Chart === 'undefined') {
         width: 100%;
         margin-bottom: 20px;
     }
-    .insight-card {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        border-radius: 12px;
-        padding: 20px;
-        margin-top: 20px;
-    }
     .tab-content {
         display: none;
         animation: fadeIn 0.3s ease-in-out;
@@ -96,14 +89,6 @@ if (typeof Chart === 'undefined') {
                 Frequent Reporters
             </span>
         </button>
-        <button class="nav-tab" data-tab="departments">
-            <span class="flex items-center">
-                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
-                </svg>
-                Department Losses
-            </span>
-        </button>
     </div>
 
     <!-- Most Frequent Item Reporters Tab -->
@@ -121,7 +106,7 @@ if (typeof Chart === 'undefined') {
                         <thead class="bg-gray-100">
                             <tr>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Username</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Department</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Report Count</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Percentage</th>
                             </tr>
@@ -130,7 +115,7 @@ if (typeof Chart === 'undefined') {
                             {% for reporter in active_reporters %}
                             <tr>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ reporter.reporter__username }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ reporter.reporter__department|default:"N/A" }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ reporter.reporter__first_name|default:"" }} {{ reporter.reporter__last_name|default:"" }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ reporter.report_count }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{% widthratio reporter.report_count total_reports 100 %}%</td>
                             </tr>
@@ -139,68 +124,35 @@ if (typeof Chart === 'undefined') {
                     </table>
                 </div>
             </div>
-            <div class="insight-card">
-                <p class="text-sm">
-                    <strong>Insight:</strong> 
-                    {% with top_reporter=active_reporters.first %}
-                    {% if top_reporter %}
-                    <strong>{{ top_reporter.reporter__username }}</strong> has reported {{ top_reporter.report_count }} lost items, 
-                    accounting for {% widthratio top_reporter.report_count total_reports 100 %}% of all reports. This recurring 
-                    behavior may indicate either a helpful community member who frequently reports found items, or someone 
-                    who needs additional support with item management and organization skills.
-                    {% endif %}
-                    {% endwith %}
-                </p>
-            </div>
+            
+            <!-- Styled Insights Section -->
+            {% for insight in insights %}
+                {% if insight.tab == 'reporters' or not insight.tab %}
+                <div class="mt-4 p-4 rounded-lg border-l-4 
+                    {% if insight.type == 'warning' %}border-yellow-400 bg-yellow-50{% elif insight.type == 'alert' %}border-red-400 bg-red-50{% elif insight.type == 'info' %}border-blue-400 bg-blue-50{% elif insight.type == 'success' %}border-green-400 bg-green-50{% endif %}">
+                    <div class="flex items-start">
+                        <div class="flex-shrink-0">
+                            <div class="w-6 h-6 rounded-full flex items-center justify-center
+                                {% if insight.type == 'warning' %}bg-yellow-100 text-yellow-600{% elif insight.type == 'alert' %}bg-red-100 text-red-600{% elif insight.type == 'info' %}bg-blue-100 text-blue-600{% elif insight.type == 'success' %}bg-green-100 text-green-600{% endif %}">
+                                <i data-feather="{{ insight.icon }}" class="h-3 w-3"></i>
+                            </div>
+                        </div>
+                        <div class="ml-3 flex-1">
+                            <h4 class="text-sm font-semibold text-gray-900 mb-1">{{ insight.title }}</h4>
+                            <p class="text-sm text-gray-700 mb-2">{{ insight.message }}</p>
+                            <div class="bg-white rounded-md p-2 border border-gray-200">
+                                <p class="text-xs font-medium text-gray-700">Recommended Action:</p>
+                                <p class="text-xs text-gray-600">{{ insight.action }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+            {% endfor %}
         </div>
     </div>
 
-    <!-- Departments with the Most Lost Items Tab -->
-    <div id="departments" class="tab-content">
-        <div class="bg-white rounded-lg shadow-md p-6 mb-6">
-            <h3 class="text-lg font-semibold text-gray-900 mb-4">Item Losses by Department</h3>
-            <p class="text-gray-600 mb-4">Suggest department-based trends and environmental causes</p>
-            <div class="chart-container">
-                <canvas id="departmentChart"></canvas>
-            </div>
-            <div class="bg-gray-50 rounded-lg p-4 mt-4">
-                <h4 class="text-md font-medium text-gray-900 mb-3">Summary Table</h4>
-                <div class="overflow-x-auto">
-                    <table class="min-w-full divide-y divide-gray-200">
-                        <thead class="bg-gray-100">
-                            <tr>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Department</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Loss Count</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Percentage</th>
-                            </tr>
-                        </thead>
-                        <tbody class="bg-white divide-y divide-gray-200">
-                            {% for item in department_analytics %}
-                            <tr>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ item.reporter__department }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ item.count }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{% widthratio item.count total_reports 100 %}%</td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-            <div class="insight-card">
-                <p class="text-sm">
-                    <strong>Insight:</strong> 
-                    {% with first_dept=department_analytics.first %}
-                    {% if first_dept %}
-                    The <strong>{{ first_dept.reporter__department }}</strong> department shows the highest item loss count, 
-                    suggesting department-based trends and potential environmental causes. This may be due to the nature 
-                    of work in this department, shared workspaces, or specific activities that increase the risk of 
-                    item loss. Consider implementing department-specific awareness programs and security measures.
-                    {% endif %}
-                    {% endwith %}
-                </p>
-            </div>
-        </div>
-    </div>
+    <!-- Charts Section -->
 </div>
 
 <script>
@@ -360,48 +312,6 @@ function initializeChartForTab(tabId) {
                     }
                 });
                 console.log('Reporters chart created successfully');
-            }
-        } else if (tabId === 'departments') {
-            const departmentCtx = document.getElementById('departmentChart');
-            if (departmentCtx && chartData.departments) {
-                console.log('Creating department chart');
-                chartInstances[tabId] = new Chart(departmentCtx.getContext('2d'), {
-                    type: 'bar',
-                    data: {
-                        labels: chartData.departments.labels,
-                        datasets: [{
-                            label: 'Loss Count',
-                            data: chartData.departments.data,
-                            backgroundColor: '#8B5CF6',
-                            borderColor: '#7C3AED',
-                            borderWidth: 1,
-                            borderRadius: 4
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: {
-                                display: false
-                            }
-                        },
-                        scales: {
-                            y: {
-                                beginAtZero: true,
-                                grid: {
-                                    color: '#f3f4f6'
-                                }
-                            },
-                            x: {
-                                grid: {
-                                    display: false
-                                }
-                            }
-                        }
-                    }
-                });
-                console.log('Department chart created successfully');
             }
         }
     } catch (error) {

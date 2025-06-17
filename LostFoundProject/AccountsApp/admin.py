@@ -21,7 +21,7 @@ class CustomUserAdmin(UserAdmin):
     # Fields to display in the user edit form
     fieldsets = (
         (None, {'fields': ('email', 'password')}),
-        ('Personal info', {'fields': ('username', 'first_name', 'last_name', 'phone_number', 'student_id', 'department')}),
+        ('Personal info', {'fields': ('username', 'first_name', 'last_name', 'phone_number', 'student_id')}),
         ('Permissions', {
             'fields': ('role', 'is_active', 'is_staff', 'is_superuser', 'groups', 'user_permissions'),
         }),
