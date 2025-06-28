@@ -1,7 +1,8 @@
 # Campus Lost and Found System
 
 A Django-based web application for managing lost and found items on campus with data analytics for behavior statistics.
-This was made by Emil Joaquin H. Diaz, Clea Jene Miles, Izyl Barbosa De la Fuente as a system project for OOP
+
+This was made by Emil Joaquin H. Diaz, Clea Jene Miles, Izyl Barbosa De la Fuente from BSIS-3A as a system project for OOP
 
 ## Prerequisites
 
