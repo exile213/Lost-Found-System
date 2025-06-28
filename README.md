@@ -60,6 +60,11 @@ python manage.py runserver
 ### 8. Access the Application
 Open your browser and go to: `http://127.0.0.1:8000/`
 
+## Accounts 
+Staff:  Email: staff@chmsu.edu.ph , password:imperial12
+User: Email: emil@chmsu.edu.ph , password: lime12345
+admin: Email: admin@gmail.com , password: admin123
+
 ## Features
 
 - **User Registration & Authentication**: Students and staff can register and login
