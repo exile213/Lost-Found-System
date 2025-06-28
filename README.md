@@ -7,14 +7,13 @@ A Django-based web application for managing lost and found items on campus with 
 Before running this project, make sure you have:
 
 - **Python 3.8+** installed on your system
-- **Git** for cloning the repository
 - **pip** (Python package installer)
 
 ## Installation & Setup
 
-### 1. Clone the Repository
+### 1. Extract and Navigate to Project
+Extract the downloaded zip file to your desired location, then navigate to the project directory:
 ```bash
-git clone <repository-url>
 cd LostAndFound
 ```
 
