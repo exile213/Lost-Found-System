@@ -91,7 +91,7 @@
                                     <span class="text-gray-600">
                                         {% if report.status == 'lost' %}Date Lost:{% elif report.status == 'found' %}Date Found:{% else %}Date:{% endif %}
                                     </span>
-                                    <span class="font-medium">{{ report.date_lost_or_found }}</span>
+                                    <span class="font-medium">{{ report.date_lost_or_found|date:"F d, Y" }}</span>
                                 </div>
                                 {% if report.time_lost_or_found %}
                                 <div class="flex justify-between">

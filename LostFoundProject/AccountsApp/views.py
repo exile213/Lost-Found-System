@@ -12,6 +12,7 @@ import json
 from django.db.models import Q
 from django.utils import timezone
 from datetime import timedelta
+from .forms import CustomUserCreationForm
 
 # Create your views here.
 
@@ -22,6 +23,13 @@ def login(request):
         if not email or not password:
             messages.error(request, 'Please enter both email and password.')
             return render(request, 'accounts/login.html', {'email': email})
+        
+        # Check for chmsu.edu.ph domain
+        email_domain = email.split('@')[1].lower() if '@' in email else ''
+        if email_domain != 'chmsu.edu.ph':
+            messages.error(request, 'Only @chmsu.edu.ph email addresses are allowed for login.')
+            return render(request, 'accounts/login.html', {'email': email})
+        
         User = get_user_model()
         try:
             user_obj = User.objects.get(email=email)
@@ -62,44 +70,18 @@ def profile(request):
     return render(request, 'accounts/profile.html')
 
 def register(request):
-    User = get_user_model()
     if request.method == 'POST':
-        username = request.POST.get('username')
-        email = request.POST.get('email')
-        password1 = request.POST.get('password1')
-        password2 = request.POST.get('password2')
-        first_name = request.POST.get('first_name')
-        last_name = request.POST.get('last_name')
-        phone_number = request.POST.get('phone')
-        student_id = request.POST.get('student_id')
-        role = request.POST.get('role')
-
-        # Basic validation
-        if password1 != password2:
-            messages.error(request, 'Passwords do not match.')
-            return render(request, 'accounts/register.html')
-        if User.objects.filter(email=email).exists():
-            messages.error(request, 'Email already registered.')
-            return render(request, 'accounts/register.html')
-        if User.objects.filter(username=username).exists():
-            messages.error(request, 'Username already taken.')
-            return render(request, 'accounts/register.html')
-
-        user = User.objects.create_user(
-            username=username,
-            email=email,
-            password=password1,
-            first_name=first_name,
-            last_name=last_name,
-            phone_number=phone_number,
-            student_id=student_id,
-            role=role
-        )
-        user.is_active = True
-        user.save()
-        messages.success(request, 'Registration successful! You can now log in.')
-        return redirect('accounts:login')
-    return render(request, 'accounts/register.html')
+        form = CustomUserCreationForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            messages.success(request, 'Registration successful! You can now log in.')
+            return redirect('accounts:login')
+        else:
+            messages.error(request, 'Please correct the errors below.')
+    else:
+        form = CustomUserCreationForm()
+    
+    return render(request, 'accounts/register.html', {'form': form})
 
 def logout(request):
     auth_logout(request)
@@ -148,6 +130,12 @@ def staff_login(request):
         
         if not email or not password:
             messages.error(request, 'Please enter both email and password.')
+            return render(request, 'accounts/staff_login.html', {'email': email})
+        
+        # Check for chmsu.edu.ph domain
+        email_domain = email.split('@')[1].lower() if '@' in email else ''
+        if email_domain != 'chmsu.edu.ph':
+            messages.error(request, 'Only @chmsu.edu.ph email addresses are allowed for login.')
             return render(request, 'accounts/staff_login.html', {'email': email})
         
         User = get_user_model()
@@ -206,77 +194,21 @@ def staff_dashboard(request):
     rejected_claims_count = ClaimRequest.objects.filter(is_verified=True, verified_by__isnull=True).count()
     total_users_count = User.objects.count()
     
+    # Get report statistics
+    total_reports = ItemReport.objects.count()
+    lost_count = ItemReport.objects.filter(status='lost').count()
+    found_count = ItemReport.objects.filter(status='found').count()
+    pending_claims_count = pending_claims.count()
+    
     return render(request, 'accounts/staff_dashboard.html', {
         'pending_claims_list': pending_claims,
         'recent_reports': recent_reports,
         'approved_claims_count': approved_claims_count,
         'rejected_claims_count': rejected_claims_count,
         'total_users_count': total_users_count,
-        'show_analytics': True,
-    })
-
-@login_required
-def staff_reports(request):
-    if not hasattr(request.user, 'role') or request.user.role != 'staff':
-        return HttpResponseForbidden('You are not authorized to access this page.')
-    
-    # Get search parameters
-    search_query = request.GET.get('search', '')
-    category_id = request.GET.get('category', '')
-    status = request.GET.get('status', '')
-    date_filter = request.GET.get('date_filter', '')
-    
-    # Start with all reports
-    reports = ItemReport.objects.all().order_by('-timestamp_reported')
-    
-    # Apply filters
-    if search_query:
-        reports = reports.filter(
-            Q(title__icontains=search_query) |
-            Q(description__icontains=search_query) |
-            Q(location__name__icontains=search_query) |
-            Q(category__name__icontains=search_query) |
-            Q(reporter__username__icontains=search_query)
-        )
-    
-    if category_id:
-        reports = reports.filter(category_id=category_id)
-    
-    if status:
-        reports = reports.filter(status=status)
-    
-    # Apply date filters
-    if date_filter:
-        today = timezone.now().date()
-        if date_filter == 'today':
-            reports = reports.filter(date_lost_or_found=today)
-        elif date_filter == 'week':
-            week_ago = today - timedelta(days=7)
-            reports = reports.filter(date_lost_or_found__gte=week_ago)
-        elif date_filter == 'month':
-            month_ago = today - timedelta(days=30)
-            reports = reports.filter(date_lost_or_found__gte=month_ago)
-    
-    # Get unique categories for filter dropdown
-    categories = Category.objects.all().order_by('name')
-    
-    # Get counts for each status
-    total_reports = reports.count()
-    lost_count = reports.filter(status='lost').count()
-    found_count = reports.filter(status='found').count()
-    claimed_count = reports.filter(status='claimed').count()
-    
-    context = {
-        'reports': reports,
-        'search_query': search_query,
-        'category': category_id,
-        'status': status,
-        'date_filter': date_filter,
-        'categories': categories,
         'total_reports': total_reports,
         'lost_count': lost_count,
         'found_count': found_count,
-        'claimed_count': claimed_count,
-    }
-    
-    return render(request, 'accounts/staff_reports.html', context)
+        'pending_claims': pending_claims_count,
+        'show_analytics': True,
+    })

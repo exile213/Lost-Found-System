@@ -167,7 +167,7 @@
                                     <div class="flex-1">
                                         <h3 class="text-sm font-medium text-gray-900">{{ item.title }}</h3>
                                         <p class="text-xs text-gray-500 mt-1">{{ item.category.name|title }} • {{ item.location.name|title }}</p>
-                                        <p class="text-xs text-gray-400 mt-1">Found on {{ item.date_lost_or_found|date:"M d, Y" }}</p>
+                                        <p class="text-xs text-gray-400 mt-1">Found on {{ item.date_lost_or_found|date:"F d, Y" }}</p>
                                     </div>
                                     <a href="{% url 'reports:report_detail' item.id %}" class="ml-4 text-blue-600 hover:text-blue-800 text-sm font-medium">
                                         View Details

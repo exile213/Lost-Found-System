@@ -48,7 +48,6 @@ INSTALLED_APPS = [
     # Third party apps
     'crispy_forms',
     'crispy_bootstrap5',
-    'django_plotly_dash.apps.DjangoPlotlyDashConfig',
     'rest_framework',
     'simple_history',
     'debug_toolbar',
@@ -102,9 +101,6 @@ DATABASES = {
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
         'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
     },
     {
@@ -153,9 +149,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Crispy Forms Configuration
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 CRISPY_TEMPLATE_PACK = "bootstrap5"
-
-# Django Plotly Dash Configuration
-X_FRAME_OPTIONS = 'SAMEORIGIN'
 
 # Debug Toolbar Configuration
 INTERNAL_IPS = [

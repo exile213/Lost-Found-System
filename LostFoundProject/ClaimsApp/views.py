@@ -8,6 +8,7 @@ from django.http import HttpResponseForbidden
 from django.contrib import messages
 from django.urls import reverse
 from django.http import HttpResponseRedirect
+from django.db.models import Q
 
 # Create your views here.
 
@@ -89,3 +90,50 @@ def my_claims(request):
         return HttpResponseForbidden('Staff cannot view personal claims.')
     user_claims = ClaimRequest.objects.filter(claimer=request.user).order_by('-submitted_at')
     return render(request, 'claims/my_claims.html', {'claims': user_claims})
+
+@login_required
+def staff_manage_claims(request):
+    """Staff view to manage all claims"""
+    if not hasattr(request.user, 'role') or request.user.role != 'staff':
+        return HttpResponseForbidden('You are not authorized to access this page.')
+    
+    # Get filter parameters
+    status_filter = request.GET.get('status', '')
+    search_query = request.GET.get('search', '')
+    
+    # Base queryset
+    claims = ClaimRequest.objects.all().select_related('item', 'claimer', 'verified_by').order_by('-submitted_at')
+    
+    # Apply filters
+    if status_filter:
+        if status_filter == 'pending':
+            claims = claims.filter(is_verified=False)
+        elif status_filter == 'approved':
+            claims = claims.filter(is_verified=True, verified_by__isnull=False)
+        elif status_filter == 'rejected':
+            claims = claims.filter(is_verified=True, verified_by__isnull=True)
+    
+    if search_query:
+        claims = claims.filter(
+            Q(item__title__icontains=search_query) |
+            Q(claimer__username__icontains=search_query) |
+            Q(claimer__email__icontains=search_query) |
+            Q(item__category__name__icontains=search_query) |
+            Q(item__location__name__icontains=search_query)
+        )
+    
+    # Get counts for filter tabs
+    total_claims = ClaimRequest.objects.count()
+    pending_claims = ClaimRequest.objects.filter(is_verified=False).count()
+    approved_claims = ClaimRequest.objects.filter(is_verified=True, verified_by__isnull=False).count()
+    rejected_claims = ClaimRequest.objects.filter(is_verified=True, verified_by__isnull=True).count()
+    
+    return render(request, 'claims/staff_manage_claims.html', {
+        'claims': claims,
+        'total_claims': total_claims,
+        'pending_claims': pending_claims,
+        'approved_claims': approved_claims,
+        'rejected_claims': rejected_claims,
+        'current_status': status_filter,
+        'search_query': search_query,
+    })

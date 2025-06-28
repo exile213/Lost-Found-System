@@ -12,5 +12,4 @@ urlpatterns = [
     path('change-password/', views.change_password, name='change_password'),
     path('staff-login/', views.staff_login, name='staff_login'),
     path('staff-dashboard/', views.staff_dashboard, name='staff_dashboard'),
-    path('staff-reports/', views.staff_reports, name='staff_reports'),
 ]

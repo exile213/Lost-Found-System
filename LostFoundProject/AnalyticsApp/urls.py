@@ -8,5 +8,4 @@ urlpatterns = [
     path('dashboard/', views.analytics_home_redirect, name='dashboard'),
     path('descriptive/', views.descriptive_analytics_view, name='descriptive'),
     path('diagnostic/', views.diagnostic_analytics_view, name='diagnostic'),
-    path('search/', views.search, name='search'),
 ] 

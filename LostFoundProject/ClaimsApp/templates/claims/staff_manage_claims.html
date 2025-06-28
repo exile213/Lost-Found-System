@@ -1,0 +1,184 @@
+{% extends 'base.html' %}
+
+{% block title %}Manage Claims - Campus Lost and Found{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+    <!-- Header -->
+    <div class="mb-8">
+        <h1 class="text-3xl font-bold text-gray-900 mb-2">Manage Claims</h1>
+        <p class="text-gray-600">Review and manage all item claims</p>
+    </div>
+
+    <!-- Search and Filter Bar -->
+    <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+        <form method="GET" class="flex flex-col md:flex-row gap-4">
+            <div class="flex-1">
+                <input type="text" name="search" value="{{ search_query }}" 
+                       placeholder="Search by item title, claimant, category, or location..."
+                       class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+            </div>
+            <div class="flex gap-2">
+                <select name="status" class="px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                    <option value="">All Status</option>
+                    <option value="pending" {% if current_status == 'pending' %}selected{% endif %}>Pending</option>
+                    <option value="approved" {% if current_status == 'approved' %}selected{% endif %}>Approved</option>
+                    <option value="rejected" {% if current_status == 'rejected' %}selected{% endif %}>Rejected</option>
+                </select>
+                <button type="submit" class="px-6 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                    <i data-feather="search" class="h-4 w-4"></i>
+                </button>
+                {% if search_query or current_status %}
+                    <a href="{% url 'claims:staff_manage_claims' %}" class="px-6 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">
+                        Clear
+                    </a>
+                {% endif %}
+            </div>
+        </form>
+    </div>
+
+    <!-- Status Tabs -->
+    <div class="bg-white rounded-lg shadow-md mb-6">
+        <div class="border-b border-gray-200">
+            <nav class="flex space-x-8 px-6" aria-label="Tabs">
+                <a href="{% url 'claims:staff_manage_claims' %}" 
+                   class="py-4 px-1 border-b-2 font-medium text-sm {% if not current_status %}border-indigo-500 text-indigo-600{% else %}border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300{% endif %}">
+                    All Claims
+                    <span class="ml-2 bg-gray-100 text-gray-900 py-0.5 px-2.5 rounded-full text-xs font-medium">{{ total_claims }}</span>
+                </a>
+                <a href="{% url 'claims:staff_manage_claims' %}?status=pending" 
+                   class="py-4 px-1 border-b-2 font-medium text-sm {% if current_status == 'pending' %}border-indigo-500 text-indigo-600{% else %}border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300{% endif %}">
+                    Pending
+                    <span class="ml-2 bg-yellow-100 text-yellow-800 py-0.5 px-2.5 rounded-full text-xs font-medium">{{ pending_claims }}</span>
+                </a>
+                <a href="{% url 'claims:staff_manage_claims' %}?status=approved" 
+                   class="py-4 px-1 border-b-2 font-medium text-sm {% if current_status == 'approved' %}border-indigo-500 text-indigo-600{% else %}border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300{% endif %}">
+                    Approved
+                    <span class="ml-2 bg-green-100 text-green-800 py-0.5 px-2.5 rounded-full text-xs font-medium">{{ approved_claims }}</span>
+                </a>
+                <a href="{% url 'claims:staff_manage_claims' %}?status=rejected" 
+                   class="py-4 px-1 border-b-2 font-medium text-sm {% if current_status == 'rejected' %}border-indigo-500 text-indigo-600{% else %}border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300{% endif %}">
+                    Rejected
+                    <span class="ml-2 bg-red-100 text-red-800 py-0.5 px-2.5 rounded-full text-xs font-medium">{{ rejected_claims }}</span>
+                </a>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Claims List -->
+    <div class="bg-white rounded-lg shadow-md">
+        <div class="px-6 py-4 border-b border-gray-200">
+            <h2 class="text-lg font-semibold text-gray-900">
+                {% if current_status == 'pending' %}Pending Claims
+                {% elif current_status == 'approved' %}Approved Claims
+                {% elif current_status == 'rejected' %}Rejected Claims
+                {% else %}All Claims{% endif %}
+                <span class="text-sm font-normal text-gray-500">({{ claims.count }} found)</span>
+            </h2>
+        </div>
+        
+        <div class="p-6">
+            {% if claims %}
+                <div class="space-y-6">
+                    {% for claim in claims %}
+                        <div class="border border-gray-200 rounded-lg p-6 hover:shadow-md transition duration-200">
+                            <div class="flex items-start justify-between">
+                                <div class="flex-1">
+                                    <div class="flex items-center space-x-3 mb-3">
+                                        <div class="p-2 {% if claim.is_verified and claim.verified_by %}bg-green-100{% elif claim.is_verified and not claim.verified_by %}bg-red-100{% else %}bg-yellow-100{% endif %} rounded-full">
+                                            <i data-feather="{% if claim.is_verified and claim.verified_by %}check-circle{% elif claim.is_verified and not claim.verified_by %}x-circle{% else %}clock{% endif %}" 
+                                               class="h-5 w-5 {% if claim.is_verified and claim.verified_by %}text-green-600{% elif claim.is_verified and not claim.verified_by %}text-red-600{% else %}text-yellow-600{% endif %}"></i>
+                                        </div>
+                                        <h3 class="text-lg font-semibold text-gray-900">{{ claim.item.title }}</h3>
+                                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium 
+                                            {% if claim.is_verified and claim.verified_by %}bg-green-100 text-green-800
+                                            {% elif claim.is_verified and not claim.verified_by %}bg-red-100 text-red-800
+                                            {% else %}bg-yellow-100 text-yellow-800{% endif %}">
+                                            {% if claim.is_verified and claim.verified_by %}Approved
+                                            {% elif claim.is_verified and not claim.verified_by %}Rejected
+                                            {% else %}Pending Review{% endif %}
+                                        </span>
+                                    </div>
+                                    
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                                        <div>
+                                            <h4 class="text-sm font-medium text-gray-900 mb-2">Item Details</h4>
+                                            <div class="space-y-1 text-sm text-gray-600">
+                                                <p><strong>Category:</strong> {{ claim.item.category.name|title }}</p>
+                                                <p><strong>Location:</strong> {{ claim.item.location.name|title }}</p>
+                                                <p><strong>Date Found:</strong> {{ claim.item.date_lost_or_found|date:"M d, Y" }}</p>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <h4 class="text-sm font-medium text-gray-900 mb-2">Claimant Details</h4>
+                                            <div class="space-y-1 text-sm text-gray-600">
+                                                <p><strong>Name:</strong> {{ claim.claimer.get_full_name|default:claim.claimer.username }}</p>
+                                                <p><strong>Email:</strong> {{ claim.claimer.email }}</p>
+                                                <p><strong>Submitted:</strong> {{ claim.submitted_at|date:"M d, Y" }} at {{ claim.submitted_at|time:"g:i A" }}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    {% if claim.reason %}
+                                    <div class="mb-4">
+                                        <h4 class="text-sm font-medium text-gray-900 mb-2">Claim Reason</h4>
+                                        <p class="text-sm text-gray-600 bg-gray-50 rounded-lg p-3">{{ claim.reason }}</p>
+                                    </div>
+                                    {% endif %}
+                                    
+                                    {% if claim.is_verified %}
+                                    <div class="mb-4">
+                                        <h4 class="text-sm font-medium text-gray-900 mb-2">Verification Details</h4>
+                                        <div class="space-y-1 text-sm text-gray-600">
+                                            <p><strong>Verified by:</strong> {{ claim.verified_by.get_full_name|default:claim.verified_by.username }}</p>
+                                            <p><strong>Verified on:</strong> {{ claim.verified_at|date:"M d, Y" }} at {{ claim.verified_at|time:"g:i A" }}</p>
+                                        </div>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="ml-6 flex flex-col space-y-2">
+                                    {% if not claim.is_verified %}
+                                        <a href="{% url 'claims:claim_verification' claim.id 'approve' %}" 
+                                           class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                                            <i data-feather="check" class="h-4 w-4 mr-2"></i>
+                                            Approve
+                                        </a>
+                                        <a href="{% url 'claims:claim_verification' claim.id 'reject' %}" 
+                                           class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+                                            <i data-feather="x" class="h-4 w-4 mr-2"></i>
+                                            Reject
+                                        </a>
+                                    {% endif %}
+                                    <a href="{% url 'reports:item_detail' claim.item.id %}" 
+                                       class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                                        <i data-feather="eye" class="h-4 w-4 mr-2"></i>
+                                        View Item
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="text-center py-12">
+                    <i data-feather="inbox" class="h-12 w-12 text-gray-400 mx-auto mb-4"></i>
+                    <h3 class="text-lg font-medium text-gray-900 mb-2">
+                        {% if current_status == 'pending' %}No pending claims
+                        {% elif current_status == 'approved' %}No approved claims
+                        {% elif current_status == 'rejected' %}No rejected claims
+                        {% else %}No claims found{% endif %}
+                    </h3>
+                    <p class="text-gray-600">
+                        {% if search_query or current_status %}
+                            Try adjusting your search criteria or filters.
+                        {% else %}
+                            Claims will appear here once users submit them.
+                        {% endif %}
+                    </p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %} 
